@@ -6,7 +6,11 @@
 export type SlideType = "title" | "content" | "bullets" | "quote" | "section" | "chart";
 export type SlideLayout = "left" | "center" | "right" | "split";
 export type ChartType = "bar" | "line" | "pie" | "donut" | "area" | "horizontal_bar";
-export type ThemeName = "neobrutalism" | "corporate" | "minimal" | "dark";
+export type ThemeName = "neobrutalism" | "corporate" | "minimal" | "dark" | "magazine" | "terminal" | "playful";
+
+// =============================================================================
+// THEME TYPE DEFINITIONS
+// =============================================================================
 
 export interface ThemeColors {
   background: string;
@@ -20,11 +24,66 @@ export interface ThemeColors {
   border_dark: string;
 }
 
+export interface ThemeTypography {
+  heading_font: string;
+  body_font: string;
+  google_fonts: string[];
+  title_size: string;
+  title_weight: number;
+  title_letter_spacing: string;
+  title_transform: "none" | "uppercase" | "lowercase" | "capitalize";
+  title_line_height: number;
+  heading_size: string;
+  heading_weight: number;
+  heading_letter_spacing: string;
+  body_size: string;
+  body_weight: number;
+  body_line_height: number;
+  quote_size: string;
+  quote_style: "normal" | "italic";
+}
+
+export interface ThemeStyle {
+  border_width: string;
+  border_style: "solid" | "dashed" | "dotted" | "none";
+  border_radius: string;
+  shadow: string | null;
+  accent_bar_position: "none" | "top" | "left" | "bottom";
+  accent_bar_width: string;
+  background_pattern: "none" | "dots" | "grid" | "scanlines" | "noise";
+  pattern_opacity: number;
+}
+
+export interface ThemeSpacing {
+  slide_padding: string;
+  element_gap: string;
+  bullet_gap: string;
+  content_max_width: string;
+}
+
+export interface ThemeDecorations {
+  bullet_style: "disc" | "dash" | "arrow" | "number" | "check" | "square";
+  bullet_size: string;
+  quote_style: "large-mark" | "accent-bar" | "icon" | "none";
+  section_divider: "line" | "accent-block" | "gradient" | "none";
+}
+
+export interface ThemeLayout {
+  title_alignment: "left" | "center" | "right";
+  content_alignment: "left" | "center" | "right";
+  vertical_position: "top" | "center" | "bottom";
+}
+
 export interface ThemeDefinition {
   name: ThemeName;
   display_name: string;
   description: string;
   colors: ThemeColors;
+  typography: ThemeTypography;
+  style: ThemeStyle;
+  spacing: ThemeSpacing;
+  decorations: ThemeDecorations;
+  layout: ThemeLayout;
 }
 
 export interface ChartDataPoint {
