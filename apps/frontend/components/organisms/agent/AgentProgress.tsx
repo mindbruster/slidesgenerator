@@ -3,7 +3,35 @@
 import { useState, useEffect, useRef } from 'react';
 import { Check, Loader2, Sparkles, Wand2, Brain, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import type { AgentEvent, Slide } from '@/lib/types';
+import type { AgentEvent, Slide, ChartDataPoint, ChartType } from '@/lib/types';
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+
+// Chart color palette matching neobrutalism design
+const CHART_COLORS = [
+  '#ff90e8', // accent-pink
+  '#0f0f0f', // primary dark
+  '#6b7280', // gray
+  '#fbbf24', // amber
+  '#34d399', // emerald
+  '#60a5fa', // blue
+  '#f87171', // red
+  '#a78bfa', // purple
+];
 
 interface AgentProgressProps {
   events: AgentEvent[];
@@ -22,8 +50,93 @@ function getSlideIcon(type: string) {
       return '💬';
     case 'section':
       return '📑';
-    default:
+    case 'chart':
       return '📊';
+    default:
+      return '📋';
+  }
+}
+
+// Simplified chart renderer for live preview
+function renderMiniChart(
+  chartType: ChartType | null | undefined,
+  chartData: ChartDataPoint[] | null | undefined
+) {
+  if (!chartData || chartData.length === 0) return null;
+
+  const data = chartData.map((point, index) => ({
+    ...point,
+    fill: point.color || CHART_COLORS[index % CHART_COLORS.length],
+  }));
+
+  switch (chartType) {
+    case 'bar':
+    case 'horizontal_bar':
+      return (
+        <BarChart
+          data={data}
+          layout={chartType === 'horizontal_bar' ? 'vertical' : 'horizontal'}
+          margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+          <XAxis dataKey={chartType === 'horizontal_bar' ? undefined : 'label'} tick={{ fontSize: 10 }} />
+          <YAxis tick={{ fontSize: 10 }} />
+          <Tooltip contentStyle={{ backgroundColor: '#f4f4f0', border: '2px solid #0f0f0f', borderRadius: '8px' }} />
+          <Bar dataKey="value">
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.fill} stroke="#0f0f0f" strokeWidth={1} />
+            ))}
+          </Bar>
+        </BarChart>
+      );
+
+    case 'line':
+      return (
+        <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+          <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+          <YAxis tick={{ fontSize: 10 }} />
+          <Tooltip contentStyle={{ backgroundColor: '#f4f4f0', border: '2px solid #0f0f0f', borderRadius: '8px' }} />
+          <Line type="monotone" dataKey="value" stroke="#ff90e8" strokeWidth={2} dot={{ fill: '#ff90e8', stroke: '#0f0f0f', strokeWidth: 1, r: 4 }} />
+        </LineChart>
+      );
+
+    case 'area':
+      return (
+        <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+          <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+          <YAxis tick={{ fontSize: 10 }} />
+          <Tooltip contentStyle={{ backgroundColor: '#f4f4f0', border: '2px solid #0f0f0f', borderRadius: '8px' }} />
+          <Area type="monotone" dataKey="value" stroke="#ff90e8" fill="#ff90e8" fillOpacity={0.3} />
+        </AreaChart>
+      );
+
+    case 'pie':
+    case 'donut':
+      return (
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={chartType === 'donut' ? '30%' : 0}
+            outerRadius="70%"
+            dataKey="value"
+            nameKey="label"
+            stroke="#0f0f0f"
+            strokeWidth={1}
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.fill} />
+            ))}
+          </Pie>
+          <Tooltip contentStyle={{ backgroundColor: '#f4f4f0', border: '2px solid #0f0f0f', borderRadius: '8px' }} />
+        </PieChart>
+      );
+
+    default:
+      return null;
   }
 }
 
@@ -113,6 +226,19 @@ function LiveSlidePreview({ slide }: { slide: Slide }) {
             <h2 className="text-3xl md:text-4xl font-bold text-text-primary">
               {slide.title}
             </h2>
+          </div>
+        )}
+
+        {slide.type === 'chart' && (
+          <div className="w-full max-w-full">
+            <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-4 text-center">
+              {slide.title}
+            </h2>
+            <div className="h-[180px] md:h-[220px] lg:h-[280px]">
+              <ResponsiveContainer width="100%" height="100%">
+                {renderMiniChart(slide.chart_type, slide.chart_data)}
+              </ResponsiveContainer>
+            </div>
           </div>
         )}
       </div>

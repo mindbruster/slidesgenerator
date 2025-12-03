@@ -272,6 +272,9 @@ class SlideGeneratorService:
                         "attribution": args.get("attribution"),
                         "layout": args.get("layout", "center"),
                         "order": slide_order,
+                        "chart_type": args.get("chart_type"),
+                        "chart_data": args.get("chart_data"),
+                        "chart_config": args.get("chart_config"),
                     }
 
                 yield AgentEvent(type="tool_call", data=event_data)
@@ -384,6 +387,9 @@ class SlideGeneratorService:
             attribution=args.get("attribution"),
             layout=args.get("layout", "center"),
             order=order,
+            chart_type=args.get("chart_type"),
+            chart_data=args.get("chart_data"),
+            chart_config=args.get("chart_config"),
         )
         self.db.add(slide)
         await self.db.flush()

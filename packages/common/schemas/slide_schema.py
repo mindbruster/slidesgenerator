@@ -2,13 +2,31 @@
 Slide schemas for API request/response validation
 """
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
 
-SlideType = Literal["title", "content", "bullets", "quote", "section"]
+SlideType = Literal["title", "content", "bullets", "quote", "section", "chart"]
 SlideLayout = Literal["left", "center", "right", "split"]
+ChartType = Literal["bar", "line", "pie", "donut", "area", "horizontal_bar"]
+
+
+class ChartDataPoint(BaseModel):
+    """Single data point for a chart"""
+
+    label: str
+    value: float
+    color: str | None = None
+
+
+class ChartConfig(BaseModel):
+    """Chart display configuration"""
+
+    show_legend: bool = True
+    show_values: bool = True
+    y_axis_label: str | None = None
+    x_axis_label: str | None = None
 
 
 class SlideBase(BaseModel):
@@ -23,6 +41,10 @@ class SlideBase(BaseModel):
     attribution: str | None = None
     layout: SlideLayout = "center"
     order: int = 0
+    # Chart fields
+    chart_type: ChartType | None = None
+    chart_data: list[ChartDataPoint] | None = None
+    chart_config: ChartConfig | None = None
 
 
 class SlideCreate(SlideBase):
@@ -43,6 +65,10 @@ class SlideUpdate(BaseModel):
     attribution: str | None = None
     layout: SlideLayout | None = None
     order: int | None = None
+    # Chart fields
+    chart_type: ChartType | None = None
+    chart_data: list[ChartDataPoint] | None = None
+    chart_config: ChartConfig | None = None
 
 
 class SlideResponse(SlideBase):

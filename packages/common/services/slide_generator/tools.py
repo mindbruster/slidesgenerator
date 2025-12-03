@@ -15,8 +15,8 @@ SLIDE_TOOLS = [
                 "properties": {
                     "slide_type": {
                         "type": "string",
-                        "enum": ["title", "content", "bullets", "quote", "section"],
-                        "description": "Type of slide: title (opening), content (paragraph), bullets (list), quote, section (divider)",
+                        "enum": ["title", "content", "bullets", "quote", "section", "chart"],
+                        "description": "Type of slide: title (opening), content (paragraph), bullets (list), quote, section (divider), chart (data visualization)",
                     },
                     "title": {
                         "type": "string",
@@ -47,6 +47,34 @@ SLIDE_TOOLS = [
                         "type": "string",
                         "enum": ["left", "center", "right"],
                         "description": "Text alignment (default: center)",
+                    },
+                    "chart_type": {
+                        "type": "string",
+                        "enum": ["bar", "line", "pie", "donut", "area", "horizontal_bar"],
+                        "description": "Type of chart (required for chart slides)",
+                    },
+                    "chart_data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "label": {"type": "string"},
+                                "value": {"type": "number"},
+                                "color": {"type": "string"},
+                            },
+                            "required": ["label", "value"],
+                        },
+                        "description": "Data points for the chart (3-8 items recommended, required for chart slides)",
+                    },
+                    "chart_config": {
+                        "type": "object",
+                        "properties": {
+                            "show_legend": {"type": "boolean"},
+                            "show_values": {"type": "boolean"},
+                            "y_axis_label": {"type": "string"},
+                            "x_axis_label": {"type": "string"},
+                        },
+                        "description": "Optional chart configuration",
                     },
                 },
                 "required": ["slide_type", "title"],
@@ -81,12 +109,23 @@ SLIDE TYPES:
 - "bullets": List of key points (3-6 bullets, each under 12 words)
 - "quote": Impactful quote with attribution
 - "section": Section divider for topic transitions
+- "chart": Data visualization (bar, line, pie, donut, area, horizontal_bar)
+
+CHART GUIDELINES:
+- Use charts PROACTIVELY to visualize data, statistics, comparisons, and trends
+- Even when exact numbers aren't provided, create illustrative charts with reasonable estimates
+- For comparisons: use bar or horizontal_bar charts
+- For trends over time: use line or area charts
+- For proportions/distributions: use pie or donut charts
+- Provide 3-8 data points with clear labels and realistic values
+- Always include a descriptive title for chart slides
 
 RULES:
 1. First slide MUST be type "title"
 2. Create exactly {slide_count} slides total
-3. Use varied slide types for visual interest (don't repeat the same type)
-4. Keep content concise and impactful
-5. After creating all slides, call finish_presentation with the presentation title
+3. Use varied slide types for visual interest
+4. ACTIVELY LOOK FOR opportunities to use chart slides - statistics, comparisons, growth, distributions, percentages
+5. Keep text content concise and impactful
+6. After creating all slides, call finish_presentation with the presentation title
 
 Create slides now based on the user's text."""

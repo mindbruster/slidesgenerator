@@ -3,7 +3,7 @@
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Card } from "@/components/atoms";
+import { Button } from "@/components/atoms";
 import { SlidePreview, SlideCarousel } from "@/components/organisms";
 import { useSlides } from "@/contexts/SlidesContext";
 import { SlidesRepository } from "@/lib/api/repositories";

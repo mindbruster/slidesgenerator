@@ -3,8 +3,22 @@
  * Mirrors backend Pydantic schemas
  */
 
-export type SlideType = "title" | "content" | "bullets" | "quote" | "section";
+export type SlideType = "title" | "content" | "bullets" | "quote" | "section" | "chart";
 export type SlideLayout = "left" | "center" | "right" | "split";
+export type ChartType = "bar" | "line" | "pie" | "donut" | "area" | "horizontal_bar";
+
+export interface ChartDataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+export interface ChartConfig {
+  show_legend?: boolean;
+  show_values?: boolean;
+  y_axis_label?: string;
+  x_axis_label?: string;
+}
 
 export interface Slide {
   id: number;
@@ -17,6 +31,10 @@ export interface Slide {
   attribution?: string | null;
   layout: SlideLayout;
   order: number;
+  // Chart fields
+  chart_type?: ChartType | null;
+  chart_data?: ChartDataPoint[] | null;
+  chart_config?: ChartConfig | null;
 }
 
 export interface Presentation {
@@ -48,6 +66,10 @@ export interface SlideUpdate {
   quote?: string | null;
   attribution?: string | null;
   layout?: SlideLayout;
+  // Chart fields
+  chart_type?: ChartType | null;
+  chart_data?: ChartDataPoint[] | null;
+  chart_config?: ChartConfig | null;
 }
 
 export interface AgentEvent {
