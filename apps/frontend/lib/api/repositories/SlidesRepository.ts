@@ -9,6 +9,7 @@ import type {
   GenerateSlidesResponse,
   Presentation,
   SlideUpdate,
+  AgentEvent,
 } from "@/lib/types";
 
 export const SlidesRepository = {
@@ -17,6 +18,55 @@ export const SlidesRepository = {
    */
   async generate(request: GenerateSlidesRequest): Promise<GenerateSlidesResponse> {
     return apiClient.post<GenerateSlidesResponse>("/api/v1/slides/generate", request);
+  },
+
+  /**
+   * Generate slides with SSE streaming for real-time progress
+   */
+  async generateStream(
+    request: GenerateSlidesRequest,
+    onEvent: (event: AgentEvent) => void
+  ): Promise<void> {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:18000";
+    const response = await fetch(`${baseUrl}/api/v1/slides/generate/stream`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error("No response body");
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+
+      for (const line of lines) {
+        if (line.startsWith("data: ")) {
+          try {
+            const data = JSON.parse(line.slice(6));
+            onEvent(data as AgentEvent);
+          } catch {
+            // Ignore parse errors
+          }
+        }
+      }
+    }
   },
 
   /**

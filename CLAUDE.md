@@ -18,6 +18,7 @@ Decksnap is a one-click slide generator that transforms text into polished prese
 ```
 apps/
 ├── frontend/              # Next.js app (port 13000)
+│   ├── app/               # App Router pages
 │   ├── components/        # Atomic design: atoms/ → molecules/ → organisms/
 │   ├── contexts/          # React Context (SlidesContext)
 │   └── lib/api/           # APIClient + repositories pattern
@@ -72,8 +73,14 @@ Single test: `poetry run pytest tests/path/test_file.py::test_name -v`
 - **Colors**: Cream bg (#f4f4f0), pink accent (#ff90e8), black text (#0f0f0f)
 - **Components**: 8-12px radius, 2px solid borders, offset shadows (2-4px black)
 
-## Ports
+## Infrastructure
 
+Start PostgreSQL and Redis manually with Docker before running `make dev`:
+```bash
+docker run -d --name decksnap-postgres -e POSTGRES_USER=decksnap -e POSTGRES_PASSWORD=decksnap -e POSTGRES_DB=decksnap -p 5432:5432 postgres:15
+```
+
+**Ports:**
 - Frontend: 13000
 - Slides API: 18000
 - PostgreSQL: 5432

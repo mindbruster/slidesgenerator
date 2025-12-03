@@ -49,3 +49,17 @@ export interface SlideUpdate {
   attribution?: string | null;
   layout?: SlideLayout;
 }
+
+export interface AgentEvent {
+  type: "thinking" | "tool_call" | "tool_result" | "complete" | "error";
+  message?: string;
+  tool?: string;
+  args?: Record<string, unknown>;
+  slide_number?: number;
+  result?: string;
+  success?: boolean;
+  presentation_id?: number;
+  title?: string;
+  slide_count?: number;
+  presentation?: Presentation;
+}

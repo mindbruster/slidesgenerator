@@ -1,4 +1,4 @@
-.PHONY: help install setup dev frontend backend lint format test migrate migrate-create clean
+.PHONY: help install setup dev frontend backend lint format test migrate migrate-create clean kill-ports
 
 # Colors for terminal output
 BLUE := \033[34m
@@ -38,7 +38,12 @@ setup: install
 	@echo "$(BLUE)Creating .env file...$(RESET)"
 	@if [ ! -f .env ]; then cp .env.example .env; echo "$(GREEN).env created from .env.example$(RESET)"; else echo ".env already exists"; fi
 
-dev:
+kill-ports:
+	@echo "$(BLUE)Killing processes on ports 13000 and 18000...$(RESET)"
+	@lsof -ti:13000 | xargs kill -9 2>/dev/null || true
+	@lsof -ti:18000 | xargs kill -9 2>/dev/null || true
+
+dev: kill-ports
 	@echo "$(BLUE)Starting Decksnap...$(RESET)"
 	poetry run honcho start -f Procfile.dev
 

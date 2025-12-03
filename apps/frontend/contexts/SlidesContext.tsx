@@ -7,7 +7,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { Presentation, Slide, SlideUpdate } from "@/lib/types";
+import type { Presentation, Slide, SlideUpdate, AgentEvent } from "@/lib/types";
 import { SlidesRepository } from "@/lib/api/repositories";
 
 // State
@@ -17,6 +17,7 @@ interface SlidesState {
   isGenerating: boolean;
   isSaving: boolean;
   error: string | null;
+  agentEvents: AgentEvent[];
 }
 
 const initialState: SlidesState = {
@@ -25,6 +26,7 @@ const initialState: SlidesState = {
   isGenerating: false,
   isSaving: false,
   error: null,
+  agentEvents: [],
 };
 
 // Actions
@@ -35,7 +37,9 @@ type SlidesAction =
   | { type: "UPDATE_SLIDE"; payload: { index: number; data: Partial<Slide> } }
   | { type: "SET_GENERATING"; payload: boolean }
   | { type: "SET_SAVING"; payload: boolean }
-  | { type: "SET_ERROR"; payload: string | null };
+  | { type: "SET_ERROR"; payload: string | null }
+  | { type: "ADD_AGENT_EVENT"; payload: AgentEvent }
+  | { type: "CLEAR_AGENT_EVENTS" };
 
 // Reducer
 function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
@@ -84,6 +88,12 @@ function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
     case "SET_ERROR":
       return { ...state, error: action.payload, isGenerating: false };
 
+    case "ADD_AGENT_EVENT":
+      return { ...state, agentEvents: [...state.agentEvents, action.payload] };
+
+    case "CLEAR_AGENT_EVENTS":
+      return { ...state, agentEvents: [] };
+
     default:
       return state;
   }
@@ -115,14 +125,25 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     async (text: string, slideCount?: number, title?: string) => {
       dispatch({ type: "SET_GENERATING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
+      dispatch({ type: "CLEAR_AGENT_EVENTS" });
 
       try {
-        const response = await SlidesRepository.generate({
-          text,
-          slide_count: slideCount,
-          title,
-        });
-        dispatch({ type: "SET_PRESENTATION", payload: response.presentation });
+        await SlidesRepository.generateStream(
+          { text, slide_count: slideCount, title },
+          (event) => {
+            dispatch({ type: "ADD_AGENT_EVENT", payload: event });
+
+            // When complete, set the presentation
+            if (event.type === "complete" && event.presentation) {
+              dispatch({ type: "SET_PRESENTATION", payload: event.presentation });
+            }
+
+            // Handle errors
+            if (event.type === "error") {
+              dispatch({ type: "SET_ERROR", payload: event.message || "Generation failed" });
+            }
+          }
+        );
       } catch (error) {
         const message = error instanceof Error ? error.message : "Failed to generate slides";
         dispatch({ type: "SET_ERROR", payload: message });
