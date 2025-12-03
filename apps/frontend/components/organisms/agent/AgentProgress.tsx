@@ -3,39 +3,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Check, Loader2, Sparkles, Wand2, Brain, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import type { AgentEvent, Slide, ChartDataPoint, ChartType } from '@/lib/types';
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-
-// Chart color palette matching neobrutalism design
-const CHART_COLORS = [
-  '#ff90e8', // accent-pink
-  '#0f0f0f', // primary dark
-  '#6b7280', // gray
-  '#fbbf24', // amber
-  '#34d399', // emerald
-  '#60a5fa', // blue
-  '#f87171', // red
-  '#a78bfa', // purple
-];
+import type { AgentEvent, Slide, ThemeName } from '@/lib/types';
+import { THEMES } from '@/lib/themes';
+import { SlidePreview } from '@/components/organisms/slides/SlidePreview';
 
 interface AgentProgressProps {
   events: AgentEvent[];
   isComplete: boolean;
+  theme?: ThemeName;
 }
 
 function getSlideIcon(type: string) {
@@ -55,195 +30,6 @@ function getSlideIcon(type: string) {
     default:
       return '📋';
   }
-}
-
-// Simplified chart renderer for live preview
-function renderMiniChart(
-  chartType: ChartType | null | undefined,
-  chartData: ChartDataPoint[] | null | undefined
-) {
-  if (!chartData || chartData.length === 0) return null;
-
-  const data = chartData.map((point, index) => ({
-    ...point,
-    fill: point.color || CHART_COLORS[index % CHART_COLORS.length],
-  }));
-
-  switch (chartType) {
-    case 'bar':
-    case 'horizontal_bar':
-      return (
-        <BarChart
-          data={data}
-          layout={chartType === 'horizontal_bar' ? 'vertical' : 'horizontal'}
-          margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-          <XAxis dataKey={chartType === 'horizontal_bar' ? undefined : 'label'} tick={{ fontSize: 10 }} />
-          <YAxis tick={{ fontSize: 10 }} />
-          <Tooltip contentStyle={{ backgroundColor: '#f4f4f0', border: '2px solid #0f0f0f', borderRadius: '8px' }} />
-          <Bar dataKey="value">
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} stroke="#0f0f0f" strokeWidth={1} />
-            ))}
-          </Bar>
-        </BarChart>
-      );
-
-    case 'line':
-      return (
-        <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-          <XAxis dataKey="label" tick={{ fontSize: 10 }} />
-          <YAxis tick={{ fontSize: 10 }} />
-          <Tooltip contentStyle={{ backgroundColor: '#f4f4f0', border: '2px solid #0f0f0f', borderRadius: '8px' }} />
-          <Line type="monotone" dataKey="value" stroke="#ff90e8" strokeWidth={2} dot={{ fill: '#ff90e8', stroke: '#0f0f0f', strokeWidth: 1, r: 4 }} />
-        </LineChart>
-      );
-
-    case 'area':
-      return (
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-          <XAxis dataKey="label" tick={{ fontSize: 10 }} />
-          <YAxis tick={{ fontSize: 10 }} />
-          <Tooltip contentStyle={{ backgroundColor: '#f4f4f0', border: '2px solid #0f0f0f', borderRadius: '8px' }} />
-          <Area type="monotone" dataKey="value" stroke="#ff90e8" fill="#ff90e8" fillOpacity={0.3} />
-        </AreaChart>
-      );
-
-    case 'pie':
-    case 'donut':
-      return (
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={chartType === 'donut' ? '30%' : 0}
-            outerRadius="70%"
-            dataKey="value"
-            nameKey="label"
-            stroke="#0f0f0f"
-            strokeWidth={1}
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
-            ))}
-          </Pie>
-          <Tooltip contentStyle={{ backgroundColor: '#f4f4f0', border: '2px solid #0f0f0f', borderRadius: '8px' }} />
-        </PieChart>
-      );
-
-    default:
-      return null;
-  }
-}
-
-function LiveSlidePreview({ slide }: { slide: Slide }) {
-  const layoutClasses = {
-    left: 'items-start text-left',
-    center: 'items-center text-center',
-    right: 'items-end text-right',
-    split: 'items-start text-left',
-  };
-
-  return (
-    <div className="w-full aspect-[16/10] bg-bg-cream rounded-2xl border-2 border-border-dark shadow-[6px_6px_0px_0px_#0f0f0f] overflow-hidden">
-      <div
-        className={cn(
-          'h-full p-8 md:p-12 lg:p-16 flex flex-col justify-center',
-          layoutClasses[slide.layout as keyof typeof layoutClasses] || layoutClasses.center
-        )}
-      >
-        {slide.type === 'title' && (
-          <div className="max-w-full">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary leading-tight">
-              {slide.title}
-            </h1>
-            {slide.subtitle && (
-              <p className="mt-4 text-lg md:text-xl lg:text-2xl text-text-secondary">
-                {slide.subtitle}
-              </p>
-            )}
-          </div>
-        )}
-
-        {slide.type === 'content' && (
-          <div className="max-w-full w-full">
-            {slide.title && (
-              <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-6">
-                {slide.title}
-              </h2>
-            )}
-            {slide.body && (
-              <p className="text-base md:text-lg lg:text-xl text-text-primary leading-relaxed">
-                {slide.body}
-              </p>
-            )}
-          </div>
-        )}
-
-        {slide.type === 'bullets' && (
-          <div className="max-w-full w-full">
-            {slide.title && (
-              <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-6">
-                {slide.title}
-              </h2>
-            )}
-            <ul className="space-y-3">
-              {slide.bullets?.map((bullet, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="w-2.5 h-2.5 mt-2 bg-accent-pink rounded-full flex-shrink-0" />
-                  <span className="text-base md:text-lg text-text-primary">{bullet}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {slide.type === 'quote' && (
-          <div className="max-w-full">
-            <div className="relative">
-              <span className="absolute -left-6 -top-4 text-5xl text-accent-pink opacity-50">
-                &ldquo;
-              </span>
-              <blockquote className="text-xl md:text-2xl lg:text-3xl text-text-primary italic leading-relaxed pl-4">
-                {slide.quote}
-              </blockquote>
-            </div>
-            {slide.attribution && (
-              <p className="mt-6 text-base md:text-lg text-text-secondary">
-                — {slide.attribution}
-              </p>
-            )}
-          </div>
-        )}
-
-        {slide.type === 'section' && (
-          <div className="text-center w-full">
-            <div className="w-16 h-1 bg-accent-pink mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary">
-              {slide.title}
-            </h2>
-          </div>
-        )}
-
-        {slide.type === 'chart' && (
-          <div className="w-full max-w-full">
-            <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-4 text-center">
-              {slide.title}
-            </h2>
-            <div className="h-[180px] md:h-[220px] lg:h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                {renderMiniChart(slide.chart_type, slide.chart_data)}
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 }
 
 function ThinkingBubble({ message }: { message: string }) {
@@ -305,7 +91,8 @@ function ToolCallItem({ event, isLatest }: { event: AgentEvent; isLatest: boolea
   return null;
 }
 
-export function AgentProgress({ events, isComplete }: AgentProgressProps) {
+export function AgentProgress({ events, isComplete, theme = 'neobrutalism' }: AgentProgressProps) {
+  const themeConfig = THEMES[theme] || THEMES.neobrutalism;
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const activityRef = useRef<HTMLDivElement>(null);
 
@@ -411,10 +198,24 @@ export function AgentProgress({ events, isComplete }: AgentProgressProps) {
         <div className="space-y-6">
           {/* Current slide preview */}
           {currentSlide ? (
-            <LiveSlidePreview slide={currentSlide} />
+            <SlidePreview slide={currentSlide} theme={theme} isEditable={false} />
           ) : (
-            <div className="w-full aspect-[16/10] bg-bg-cream rounded-2xl border-2 border-border-dark shadow-[6px_6px_0px_0px_#e5e5e5] flex items-center justify-center">
-              <div className="text-center text-text-muted">
+            <div
+              className="w-full aspect-video flex items-center justify-center"
+              style={{
+                backgroundColor: themeConfig.colors.background,
+                borderWidth: themeConfig.style.border_width,
+                borderStyle: themeConfig.style.border_style,
+                borderColor: themeConfig.colors.border_dark,
+                borderRadius: themeConfig.style.border_radius,
+                boxShadow: themeConfig.style.shadow
+                  ? themeConfig.style.shadow.includes('rgba')
+                    ? themeConfig.style.shadow
+                    : `${themeConfig.style.shadow} ${themeConfig.colors.border_dark}`
+                  : 'none',
+              }}
+            >
+              <div className="text-center" style={{ color: themeConfig.colors.text_secondary }}>
                 <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" />
                 <p className="text-lg font-medium">Generating first slide...</p>
               </div>
@@ -439,10 +240,14 @@ export function AgentProgress({ events, isComplete }: AgentProgressProps) {
                     onClick={() => setCurrentSlideIndex(index)}
                     className={cn(
                       'w-3 h-3 rounded-full transition-all',
-                      index === currentSlideIndex
-                        ? 'bg-accent-pink scale-125'
-                        : 'bg-border hover:bg-text-muted'
+                      index === currentSlideIndex ? 'scale-125' : 'hover:opacity-70'
                     )}
+                    style={{
+                      backgroundColor:
+                        index === currentSlideIndex
+                          ? themeConfig.colors.accent
+                          : themeConfig.colors.border,
+                    }}
                   />
                 ))}
               </div>

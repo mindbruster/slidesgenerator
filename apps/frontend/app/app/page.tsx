@@ -42,7 +42,7 @@ export default function AppPage() {
         {isGenerating ? (
           /* Generation Progress - Full width layout */
           <div className="relative px-4 py-8 animate-fade-in">
-            <AgentProgress events={state.agentEvents} isComplete={isComplete} />
+            <AgentProgress events={state.agentEvents} isComplete={isComplete} theme={state.currentTheme} />
           </div>
         ) : (
           /* Input Form - Centered layout */

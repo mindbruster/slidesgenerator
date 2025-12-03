@@ -18,6 +18,7 @@ interface SlidesState {
   isSaving: boolean;
   error: string | null;
   agentEvents: AgentEvent[];
+  currentTheme: ThemeName;
 }
 
 const initialState: SlidesState = {
@@ -27,6 +28,7 @@ const initialState: SlidesState = {
   isSaving: false,
   error: null,
   agentEvents: [],
+  currentTheme: "neobrutalism",
 };
 
 // Actions
@@ -39,7 +41,8 @@ type SlidesAction =
   | { type: "SET_SAVING"; payload: boolean }
   | { type: "SET_ERROR"; payload: string | null }
   | { type: "ADD_AGENT_EVENT"; payload: AgentEvent }
-  | { type: "CLEAR_AGENT_EVENTS" };
+  | { type: "CLEAR_AGENT_EVENTS" }
+  | { type: "SET_THEME"; payload: ThemeName };
 
 // Reducer
 function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
@@ -94,6 +97,9 @@ function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
     case "CLEAR_AGENT_EVENTS":
       return { ...state, agentEvents: [] };
 
+    case "SET_THEME":
+      return { ...state, currentTheme: action.payload };
+
     default:
       return state;
   }
@@ -126,6 +132,7 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "SET_GENERATING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
       dispatch({ type: "CLEAR_AGENT_EVENTS" });
+      dispatch({ type: "SET_THEME", payload: theme || "neobrutalism" });
 
       try {
         await SlidesRepository.generateStream(
