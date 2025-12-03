@@ -56,10 +56,12 @@ export interface AgentEvent {
   tool?: string;
   args?: Record<string, unknown>;
   slide_number?: number;
+  slide?: Slide;
   result?: string;
   success?: boolean;
   presentation_id?: number;
   title?: string;
   slide_count?: number;
+  iteration?: number;
   presentation?: Presentation;
 }

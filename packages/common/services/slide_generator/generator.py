@@ -216,6 +216,16 @@ class SlideGeneratorService:
             if not tool_calls:
                 break
 
+            # Emit thinking event with LLM's reasoning
+            if assistant_message.content:
+                yield AgentEvent(
+                    type="thinking",
+                    data={
+                        "message": assistant_message.content,
+                        "iteration": iteration + 1,
+                    },
+                )
+
             # Add assistant message to context
             messages.append(
                 {
@@ -243,15 +253,28 @@ class SlideGeneratorService:
                 except json.JSONDecodeError:
                     continue
 
-                # Emit tool call event
-                yield AgentEvent(
-                    type="tool_call",
-                    data={
-                        "tool": name,
-                        "args": args,
-                        "slide_number": slide_order + 1 if name == "add_slide" else None,
-                    },
-                )
+                # Emit tool call event with full slide data for preview
+                event_data: dict[str, Any] = {
+                    "tool": name,
+                    "args": args,
+                    "slide_number": slide_order + 1 if name == "add_slide" else None,
+                }
+
+                # Include slide preview data
+                if name == "add_slide":
+                    event_data["slide"] = {
+                        "type": args.get("slide_type", "content"),
+                        "title": args.get("title"),
+                        "subtitle": args.get("subtitle"),
+                        "body": args.get("body"),
+                        "bullets": args.get("bullets"),
+                        "quote": args.get("quote"),
+                        "attribution": args.get("attribution"),
+                        "layout": args.get("layout", "center"),
+                        "order": slide_order,
+                    }
+
+                yield AgentEvent(type="tool_call", data=event_data)
 
                 # Execute tool
                 result, finished = await self._handle_tool_call(
