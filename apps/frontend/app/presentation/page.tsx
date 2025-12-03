@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  FileSpreadsheet,
   Share2,
   Layers,
 } from "lucide-react";
@@ -54,6 +55,12 @@ export default function PresentationPage() {
   const handleExportPdf = useCallback(() => {
     if (!state.presentation) return;
     const url = SlidesRepository.getPdfUrl(state.presentation.id);
+    window.open(url, "_blank");
+  }, [state.presentation]);
+
+  const handleExportPptx = useCallback(() => {
+    if (!state.presentation) return;
+    const url = SlidesRepository.getPptxUrl(state.presentation.id);
     window.open(url, "_blank");
   }, [state.presentation]);
 
@@ -117,9 +124,13 @@ export default function PresentationPage() {
             <Share2 className="w-4 h-4" />
             <span className="hidden md:inline">Share</span>
           </Button>
+          <Button variant="secondary" size="sm" onClick={handleExportPptx}>
+            <FileSpreadsheet className="w-4 h-4" />
+            <span className="hidden md:inline">PPTX</span>
+          </Button>
           <Button variant="primary" size="sm" onClick={handleExportPdf}>
             <Download className="w-4 h-4" />
-            <span className="hidden md:inline">Export PDF</span>
+            <span className="hidden md:inline">PDF</span>
           </Button>
         </div>
       </header>

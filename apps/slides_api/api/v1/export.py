@@ -1,9 +1,8 @@
 """
-Export endpoints for PDF and shareable links
+Export endpoints for PDF, PPTX, and shareable links
 """
 
 import base64
-import json
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -14,6 +13,7 @@ from sqlalchemy.orm import selectinload
 from packages.common.core.database import AsyncSessionDep
 from packages.common.models import Presentation
 from packages.common.schemas import PresentationResponse
+from packages.common.services.pptx_export_service import generate_pptx
 
 router = APIRouter()
 
@@ -96,6 +96,40 @@ async def export_pdf(
             status_code=501,
             detail="PDF export requires WeasyPrint. Install with: pip install weasyprint",
         ) from None
+
+
+@router.get("/pptx/{presentation_id}")
+async def export_pptx(
+    presentation_id: int,
+    db: AsyncSessionDep,
+) -> StreamingResponse:
+    """
+    Export presentation to PPTX (PowerPoint).
+
+    Uses python-pptx for native, editable PowerPoint generation.
+    """
+    # Get presentation with slides
+    query = (
+        select(Presentation)
+        .options(selectinload(Presentation.slides))
+        .where(Presentation.id == presentation_id)
+    )
+    result = await db.execute(query)
+    presentation = result.scalar_one_or_none()
+
+    if not presentation:
+        raise HTTPException(status_code=404, detail="Presentation not found")
+
+    # Generate PPTX bytes
+    pptx_bytes = generate_pptx(presentation)
+
+    return StreamingResponse(
+        iter([pptx_bytes]),
+        media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        headers={
+            "Content-Disposition": f'attachment; filename="{presentation.title}.pptx"'
+        },
+    )
 
 
 def _generate_slide_html(presentation: Presentation) -> str:

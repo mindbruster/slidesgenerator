@@ -130,4 +130,12 @@ export const SlidesRepository = {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:18000";
     return `${baseUrl}/api/v1/export/pdf/${presentationId}`;
   },
+
+  /**
+   * Get PPTX export URL (triggers download)
+   */
+  getPptxUrl(presentationId: number): string {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:18000";
+    return `${baseUrl}/api/v1/export/pptx/${presentationId}`;
+  },
 };
