@@ -1,0 +1,224 @@
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+  type ReactNode,
+} from "react";
+import type { Presentation, Slide, SlideUpdate } from "@/lib/types";
+import { SlidesRepository } from "@/lib/api/repositories";
+
+// State
+interface SlidesState {
+  presentation: Presentation | null;
+  currentSlideIndex: number;
+  isGenerating: boolean;
+  isSaving: boolean;
+  error: string | null;
+}
+
+const initialState: SlidesState = {
+  presentation: null,
+  currentSlideIndex: 0,
+  isGenerating: false,
+  isSaving: false,
+  error: null,
+};
+
+// Actions
+type SlidesAction =
+  | { type: "SET_PRESENTATION"; payload: Presentation }
+  | { type: "CLEAR_PRESENTATION" }
+  | { type: "SET_CURRENT_SLIDE"; payload: number }
+  | { type: "UPDATE_SLIDE"; payload: { index: number; data: Partial<Slide> } }
+  | { type: "SET_GENERATING"; payload: boolean }
+  | { type: "SET_SAVING"; payload: boolean }
+  | { type: "SET_ERROR"; payload: string | null };
+
+// Reducer
+function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
+  switch (action.type) {
+    case "SET_PRESENTATION":
+      return {
+        ...state,
+        presentation: action.payload,
+        currentSlideIndex: 0,
+        error: null,
+      };
+
+    case "CLEAR_PRESENTATION":
+      return {
+        ...state,
+        presentation: null,
+        currentSlideIndex: 0,
+      };
+
+    case "SET_CURRENT_SLIDE":
+      return {
+        ...state,
+        currentSlideIndex: action.payload,
+      };
+
+    case "UPDATE_SLIDE":
+      if (!state.presentation) return state;
+      return {
+        ...state,
+        presentation: {
+          ...state.presentation,
+          slides: state.presentation.slides.map((slide, i) =>
+            i === action.payload.index
+              ? { ...slide, ...action.payload.data }
+              : slide
+          ),
+        },
+      };
+
+    case "SET_GENERATING":
+      return { ...state, isGenerating: action.payload };
+
+    case "SET_SAVING":
+      return { ...state, isSaving: action.payload };
+
+    case "SET_ERROR":
+      return { ...state, error: action.payload, isGenerating: false };
+
+    default:
+      return state;
+  }
+}
+
+// Context
+interface SlidesContextValue {
+  state: SlidesState;
+  // Actions
+  generateSlides: (text: string, slideCount?: number, title?: string) => Promise<void>;
+  loadPresentation: (id: number) => Promise<void>;
+  clearPresentation: () => void;
+  setCurrentSlide: (index: number) => void;
+  updateSlide: (index: number, data: SlideUpdate) => Promise<void>;
+  nextSlide: () => void;
+  previousSlide: () => void;
+  // Computed
+  currentSlide: Slide | null;
+  totalSlides: number;
+}
+
+const SlidesContext = createContext<SlidesContextValue | null>(null);
+
+// Provider
+export function SlidesProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(slidesReducer, initialState);
+
+  const generateSlides = useCallback(
+    async (text: string, slideCount?: number, title?: string) => {
+      dispatch({ type: "SET_GENERATING", payload: true });
+      dispatch({ type: "SET_ERROR", payload: null });
+
+      try {
+        const response = await SlidesRepository.generate({
+          text,
+          slide_count: slideCount,
+          title,
+        });
+        dispatch({ type: "SET_PRESENTATION", payload: response.presentation });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to generate slides";
+        dispatch({ type: "SET_ERROR", payload: message });
+        throw error;
+      } finally {
+        dispatch({ type: "SET_GENERATING", payload: false });
+      }
+    },
+    []
+  );
+
+  const loadPresentation = useCallback(async (id: number) => {
+    dispatch({ type: "SET_GENERATING", payload: true });
+    try {
+      const presentation = await SlidesRepository.getPresentation(id);
+      dispatch({ type: "SET_PRESENTATION", payload: presentation });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load presentation";
+      dispatch({ type: "SET_ERROR", payload: message });
+      throw error;
+    } finally {
+      dispatch({ type: "SET_GENERATING", payload: false });
+    }
+  }, []);
+
+  const clearPresentation = useCallback(() => {
+    dispatch({ type: "CLEAR_PRESENTATION" });
+  }, []);
+
+  const setCurrentSlide = useCallback((index: number) => {
+    dispatch({ type: "SET_CURRENT_SLIDE", payload: index });
+  }, []);
+
+  const updateSlide = useCallback(
+    async (index: number, data: SlideUpdate) => {
+      if (!state.presentation) return;
+
+      // Optimistic update
+      dispatch({ type: "UPDATE_SLIDE", payload: { index, data } });
+      dispatch({ type: "SET_SAVING", payload: true });
+
+      try {
+        await SlidesRepository.updateSlide(state.presentation.id, index, data);
+      } catch (error) {
+        // Revert on error - reload the presentation
+        const message = error instanceof Error ? error.message : "Failed to save slide";
+        dispatch({ type: "SET_ERROR", payload: message });
+        // Could reload presentation here to revert
+      } finally {
+        dispatch({ type: "SET_SAVING", payload: false });
+      }
+    },
+    [state.presentation]
+  );
+
+  const nextSlide = useCallback(() => {
+    if (!state.presentation) return;
+    const next = Math.min(
+      state.currentSlideIndex + 1,
+      state.presentation.slides.length - 1
+    );
+    dispatch({ type: "SET_CURRENT_SLIDE", payload: next });
+  }, [state.currentSlideIndex, state.presentation]);
+
+  const previousSlide = useCallback(() => {
+    const prev = Math.max(state.currentSlideIndex - 1, 0);
+    dispatch({ type: "SET_CURRENT_SLIDE", payload: prev });
+  }, [state.currentSlideIndex]);
+
+  // Computed values
+  const currentSlide = state.presentation?.slides[state.currentSlideIndex] ?? null;
+  const totalSlides = state.presentation?.slides.length ?? 0;
+
+  const value: SlidesContextValue = {
+    state,
+    generateSlides,
+    loadPresentation,
+    clearPresentation,
+    setCurrentSlide,
+    updateSlide,
+    nextSlide,
+    previousSlide,
+    currentSlide,
+    totalSlides,
+  };
+
+  return (
+    <SlidesContext.Provider value={value}>{children}</SlidesContext.Provider>
+  );
+}
+
+// Hook
+export function useSlides() {
+  const context = useContext(SlidesContext);
+  if (!context) {
+    throw new Error("useSlides must be used within SlidesProvider");
+  }
+  return context;
+}
