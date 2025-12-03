@@ -6,6 +6,7 @@ import { TextInputForm } from "@/components/molecules";
 import { AgentProgress } from "@/components/organisms/agent";
 import { useSlides } from "@/contexts/SlidesContext";
 import { Layers } from "lucide-react";
+import type { ThemeName } from "@/lib/types/slide";
 
 export default function AppPage() {
   const router = useRouter();
@@ -24,8 +25,8 @@ export default function AppPage() {
     }
   }, [isComplete, state.presentation, router]);
 
-  const handleSubmit = async (text: string) => {
-    await generateSlides(text);
+  const handleSubmit = async (text: string, theme: ThemeName) => {
+    await generateSlides(text, theme);
   };
 
   return (

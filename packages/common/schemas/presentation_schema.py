@@ -76,6 +76,10 @@ class GenerateSlidesRequest(BaseModel):
         max_length=255,
         description="Optional presentation title (auto-generated if not provided)",
     )
+    theme: str = Field(
+        default="neobrutalism",
+        description="Presentation theme (neobrutalism, corporate, minimal, dark)",
+    )
 
 
 class GenerateSlidesResponse(BaseModel):

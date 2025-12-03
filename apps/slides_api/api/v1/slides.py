@@ -29,6 +29,7 @@ async def generate_slides(
             text=request.text,
             slide_count=request.slide_count or 8,
             title=request.title,
+            theme=request.theme,
         )
         return GenerateSlidesResponse(presentation=presentation)
     except Exception as e:
@@ -58,6 +59,7 @@ async def generate_slides_stream(
                 text=request.text,
                 slide_count=request.slide_count or 8,
                 title=request.title,
+                theme=request.theme,
             ):
                 yield event.to_sse()
         except Exception as e:

@@ -6,6 +6,26 @@
 export type SlideType = "title" | "content" | "bullets" | "quote" | "section" | "chart";
 export type SlideLayout = "left" | "center" | "right" | "split";
 export type ChartType = "bar" | "line" | "pie" | "donut" | "area" | "horizontal_bar";
+export type ThemeName = "neobrutalism" | "corporate" | "minimal" | "dark";
+
+export interface ThemeColors {
+  background: string;
+  surface: string;
+  text_primary: string;
+  text_secondary: string;
+  accent: string;
+  accent_hover: string;
+  accent_light: string;
+  border: string;
+  border_dark: string;
+}
+
+export interface ThemeDefinition {
+  name: ThemeName;
+  display_name: string;
+  description: string;
+  colors: ThemeColors;
+}
 
 export interface ChartDataPoint {
   label: string;
@@ -51,6 +71,7 @@ export interface GenerateSlidesRequest {
   text: string;
   slide_count?: number;
   title?: string;
+  theme?: ThemeName;
 }
 
 export interface GenerateSlidesResponse {

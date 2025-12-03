@@ -7,7 +7,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { Presentation, Slide, SlideUpdate, AgentEvent } from "@/lib/types";
+import type { Presentation, Slide, SlideUpdate, AgentEvent, ThemeName } from "@/lib/types";
 import { SlidesRepository } from "@/lib/api/repositories";
 
 // State
@@ -103,7 +103,7 @@ function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
 interface SlidesContextValue {
   state: SlidesState;
   // Actions
-  generateSlides: (text: string, slideCount?: number, title?: string) => Promise<void>;
+  generateSlides: (text: string, theme?: ThemeName, slideCount?: number, title?: string) => Promise<void>;
   loadPresentation: (id: number) => Promise<void>;
   clearPresentation: () => void;
   setCurrentSlide: (index: number) => void;
@@ -122,14 +122,14 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(slidesReducer, initialState);
 
   const generateSlides = useCallback(
-    async (text: string, slideCount?: number, title?: string) => {
+    async (text: string, theme?: ThemeName, slideCount?: number, title?: string) => {
       dispatch({ type: "SET_GENERATING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
       dispatch({ type: "CLEAR_AGENT_EVENTS" });
 
       try {
         await SlidesRepository.generateStream(
-          { text, slide_count: slideCount, title },
+          { text, slide_count: slideCount, title, theme },
           (event) => {
             dispatch({ type: "ADD_AGENT_EVENT", payload: event });
 

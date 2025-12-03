@@ -3,3 +3,4 @@ export { SlideCard } from "./SlideCard";
 export { FeatureCard } from "./FeatureCard";
 export { PricingCard } from "./PricingCard";
 export { FAQItem } from "./FAQItem";
+export { ThemeSelector } from "./ThemeSelector";

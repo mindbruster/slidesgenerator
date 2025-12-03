@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import type { Slide, ChartDataPoint, ChartConfig, ChartType } from "@/lib/types";
+import type { Slide, ChartDataPoint, ChartConfig, ChartType, ThemeName } from "@/lib/types";
+import { THEMES } from "@/lib/themes";
 import {
   BarChart,
   Bar,
@@ -20,20 +21,23 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Chart color palette matching neobrutalism design
-const CHART_COLORS = [
-  "#ff90e8", // accent-pink
-  "#0f0f0f", // primary dark
-  "#6b7280", // gray
-  "#fbbf24", // amber
-  "#34d399", // emerald
-  "#60a5fa", // blue
-  "#f87171", // red
-  "#a78bfa", // purple
-];
+// Generate chart colors based on theme accent
+function getChartColors(accent: string): string[] {
+  return [
+    accent, // theme accent
+    "#0f0f0f", // primary dark
+    "#6b7280", // gray
+    "#fbbf24", // amber
+    "#34d399", // emerald
+    "#60a5fa", // blue
+    "#f87171", // red
+    "#a78bfa", // purple
+  ];
+}
 
 interface SlidePreviewProps {
   slide: Slide;
+  theme?: ThemeName;
   onEditTitle?: (value: string) => void;
   onEditSubtitle?: (value: string) => void;
   onEditBody?: (value: string) => void;
@@ -44,34 +48,45 @@ interface SlidePreviewProps {
   isEditable?: boolean;
 }
 
+interface ThemeColors {
+  background: string;
+  text: string;
+  textSecondary: string;
+  accent: string;
+  border: string;
+}
+
 // Helper function to render chart based on type
 function renderChart(
   chartType: ChartType | null | undefined,
   chartData: ChartDataPoint[] | null | undefined,
-  chartConfig: ChartConfig | null | undefined
+  chartConfig: ChartConfig | null | undefined,
+  colors: ThemeColors
 ) {
   if (!chartData || chartData.length === 0) return null;
 
+  const chartColors = getChartColors(colors.accent);
   const data = chartData.map((point, index) => ({
     ...point,
-    fill: point.color || CHART_COLORS[index % CHART_COLORS.length],
+    fill: point.color || chartColors[index % chartColors.length],
   }));
 
   const showLegend = chartConfig?.show_legend ?? true;
   const showValues = chartConfig?.show_values ?? true;
+  const tooltipStyle = { backgroundColor: colors.background, border: `2px solid ${colors.border}`, borderRadius: "8px" };
 
   switch (chartType) {
     case "bar":
       return (
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-          <XAxis dataKey="label" tick={{ fill: "#0f0f0f" }} />
-          <YAxis tick={{ fill: "#0f0f0f" }} label={chartConfig?.y_axis_label ? { value: chartConfig.y_axis_label, angle: -90, position: "insideLeft" } : undefined} />
-          <Tooltip contentStyle={{ backgroundColor: "#f4f4f0", border: "2px solid #0f0f0f", borderRadius: "8px" }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
+          <XAxis dataKey="label" tick={{ fill: colors.text }} />
+          <YAxis tick={{ fill: colors.text }} label={chartConfig?.y_axis_label ? { value: chartConfig.y_axis_label, angle: -90, position: "insideLeft" } : undefined} />
+          <Tooltip contentStyle={tooltipStyle} />
           {showLegend && <Legend />}
-          <Bar dataKey="value" label={showValues ? { position: "top", fill: "#0f0f0f" } : false}>
+          <Bar dataKey="value" label={showValues ? { position: "top", fill: colors.text } : false}>
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} stroke="#0f0f0f" strokeWidth={2} />
+              <Cell key={`cell-${index}`} fill={entry.fill} stroke={colors.border} strokeWidth={2} />
             ))}
           </Bar>
         </BarChart>
@@ -80,14 +95,14 @@ function renderChart(
     case "horizontal_bar":
       return (
         <BarChart data={data} layout="vertical" margin={{ top: 20, right: 30, left: 60, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-          <XAxis type="number" tick={{ fill: "#0f0f0f" }} />
-          <YAxis dataKey="label" type="category" tick={{ fill: "#0f0f0f" }} width={80} />
-          <Tooltip contentStyle={{ backgroundColor: "#f4f4f0", border: "2px solid #0f0f0f", borderRadius: "8px" }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
+          <XAxis type="number" tick={{ fill: colors.text }} />
+          <YAxis dataKey="label" type="category" tick={{ fill: colors.text }} width={80} />
+          <Tooltip contentStyle={tooltipStyle} />
           {showLegend && <Legend />}
-          <Bar dataKey="value" label={showValues ? { position: "right", fill: "#0f0f0f" } : false}>
+          <Bar dataKey="value" label={showValues ? { position: "right", fill: colors.text } : false}>
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} stroke="#0f0f0f" strokeWidth={2} />
+              <Cell key={`cell-${index}`} fill={entry.fill} stroke={colors.border} strokeWidth={2} />
             ))}
           </Bar>
         </BarChart>
@@ -96,18 +111,18 @@ function renderChart(
     case "line":
       return (
         <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-          <XAxis dataKey="label" tick={{ fill: "#0f0f0f" }} />
-          <YAxis tick={{ fill: "#0f0f0f" }} />
-          <Tooltip contentStyle={{ backgroundColor: "#f4f4f0", border: "2px solid #0f0f0f", borderRadius: "8px" }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
+          <XAxis dataKey="label" tick={{ fill: colors.text }} />
+          <YAxis tick={{ fill: colors.text }} />
+          <Tooltip contentStyle={tooltipStyle} />
           {showLegend && <Legend />}
           <Line
             type="monotone"
             dataKey="value"
-            stroke="#ff90e8"
+            stroke={colors.accent}
             strokeWidth={3}
-            dot={{ fill: "#ff90e8", stroke: "#0f0f0f", strokeWidth: 2, r: 6 }}
-            activeDot={{ r: 8, stroke: "#0f0f0f", strokeWidth: 2 }}
+            dot={{ fill: colors.accent, stroke: colors.border, strokeWidth: 2, r: 6 }}
+            activeDot={{ r: 8, stroke: colors.border, strokeWidth: 2 }}
           />
         </LineChart>
       );
@@ -115,17 +130,17 @@ function renderChart(
     case "area":
       return (
         <AreaChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-          <XAxis dataKey="label" tick={{ fill: "#0f0f0f" }} />
-          <YAxis tick={{ fill: "#0f0f0f" }} />
-          <Tooltip contentStyle={{ backgroundColor: "#f4f4f0", border: "2px solid #0f0f0f", borderRadius: "8px" }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
+          <XAxis dataKey="label" tick={{ fill: colors.text }} />
+          <YAxis tick={{ fill: colors.text }} />
+          <Tooltip contentStyle={tooltipStyle} />
           {showLegend && <Legend />}
           <Area
             type="monotone"
             dataKey="value"
-            stroke="#ff90e8"
+            stroke={colors.accent}
             strokeWidth={2}
-            fill="#ff90e8"
+            fill={colors.accent}
             fillOpacity={0.3}
           />
         </AreaChart>
@@ -145,14 +160,14 @@ function renderChart(
             nameKey="label"
             label={showValues ? ({ name, value }) => `${name}: ${value}` : false}
             labelLine={showValues}
-            stroke="#0f0f0f"
+            stroke={colors.border}
             strokeWidth={2}
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
           </Pie>
-          <Tooltip contentStyle={{ backgroundColor: "#f4f4f0", border: "2px solid #0f0f0f", borderRadius: "8px" }} />
+          <Tooltip contentStyle={tooltipStyle} />
           {showLegend && <Legend />}
         </PieChart>
       );
@@ -164,6 +179,7 @@ function renderChart(
 
 export function SlidePreview({
   slide,
+  theme = "neobrutalism",
   onEditTitle,
   onEditSubtitle,
   onEditBody,
@@ -173,6 +189,16 @@ export function SlidePreview({
   onEditChartData,
   isEditable = true,
 }: SlidePreviewProps) {
+  // Get theme colors
+  const themeConfig = THEMES[theme] || THEMES.neobrutalism;
+  const colors: ThemeColors = {
+    background: themeConfig.colors.background,
+    text: themeConfig.colors.text_primary,
+    textSecondary: themeConfig.colors.text_secondary,
+    accent: themeConfig.colors.accent,
+    border: themeConfig.colors.border_dark,
+  };
+
   const layoutClasses = {
     left: "items-start text-left",
     center: "items-center text-center",
@@ -184,17 +210,19 @@ export function SlidePreview({
     value,
     onChange,
     className,
+    style,
     as: Component = "p",
     placeholder = "Click to edit...",
   }: {
     value: string | null | undefined;
     onChange?: (value: string) => void;
     className?: string;
+    style?: React.CSSProperties;
     as?: "h1" | "h2" | "p" | "span" | "blockquote";
     placeholder?: string;
   }) => {
     if (!isEditable || !onChange) {
-      return <Component className={className}>{value || placeholder}</Component>;
+      return <Component className={className} style={style}>{value || placeholder}</Component>;
     }
 
     return (
@@ -205,10 +233,14 @@ export function SlidePreview({
         className={cn(
           className,
           "outline-none",
-          "focus:bg-accent-pink-light focus:ring-2 focus:ring-accent-pink focus:ring-offset-2",
+          "focus:ring-2 focus:ring-offset-2",
           "rounded px-1 -mx-1",
           "cursor-text"
         )}
+        style={{
+          ...style,
+          "--tw-ring-color": colors.accent,
+        } as React.CSSProperties}
       >
         {value || placeholder}
       </Component>
@@ -216,7 +248,14 @@ export function SlidePreview({
   };
 
   return (
-    <div className="w-full aspect-video bg-bg-cream rounded-2xl border-2 border-border-dark shadow-[4px_4px_0px_0px_#0f0f0f] overflow-hidden">
+    <div
+      className="w-full aspect-video rounded-2xl border-2 overflow-hidden"
+      style={{
+        backgroundColor: colors.background,
+        borderColor: colors.border,
+        boxShadow: `4px 4px 0px 0px ${colors.border}`,
+      }}
+    >
       <div
         className={cn(
           "h-full p-12 md:p-16 lg:p-20 flex flex-col justify-center",
@@ -230,16 +269,18 @@ export function SlidePreview({
               as="h1"
               value={slide.title}
               onChange={onEditTitle}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary leading-tight"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
               placeholder="Presentation Title"
+              style={{ color: colors.text }}
             />
             {(slide.subtitle || isEditable) && (
               <EditableText
                 as="p"
                 value={slide.subtitle}
                 onChange={onEditSubtitle}
-                className="mt-4 text-xl md:text-2xl text-text-secondary"
+                className="mt-4 text-xl md:text-2xl"
                 placeholder="Subtitle"
+                style={{ color: colors.textSecondary }}
               />
             )}
           </div>
@@ -253,8 +294,9 @@ export function SlidePreview({
                 as="h2"
                 value={slide.title}
                 onChange={onEditTitle}
-                className="text-3xl md:text-4xl font-bold text-text-primary mb-6"
+                className="text-3xl md:text-4xl font-bold mb-6"
                 placeholder="Slide Title"
+                style={{ color: colors.text }}
               />
             )}
             {(slide.body || isEditable) && (
@@ -262,8 +304,9 @@ export function SlidePreview({
                 as="p"
                 value={slide.body}
                 onChange={onEditBody}
-                className="text-lg md:text-xl text-text-primary leading-relaxed"
+                className="text-lg md:text-xl leading-relaxed"
                 placeholder="Add content here..."
+                style={{ color: colors.text }}
               />
             )}
           </div>
@@ -277,20 +320,25 @@ export function SlidePreview({
                 as="h2"
                 value={slide.title}
                 onChange={onEditTitle}
-                className="text-3xl md:text-4xl font-bold text-text-primary mb-8"
+                className="text-3xl md:text-4xl font-bold mb-8"
                 placeholder="Slide Title"
+                style={{ color: colors.text }}
               />
             )}
             <ul className="space-y-4">
               {slide.bullets?.map((bullet, i) => (
                 <li key={i} className="flex items-start gap-4">
-                  <span className="w-3 h-3 mt-2 bg-accent-pink rounded-full flex-shrink-0" />
+                  <span
+                    className="w-3 h-3 mt-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: colors.accent }}
+                  />
                   <EditableText
                     as="span"
                     value={bullet}
                     onChange={onEditBullet ? (v) => onEditBullet(i, v) : undefined}
-                    className="text-lg md:text-xl text-text-primary"
+                    className="text-lg md:text-xl"
                     placeholder="Bullet point"
+                    style={{ color: colors.text }}
                   />
                 </li>
               ))}
@@ -302,15 +350,19 @@ export function SlidePreview({
         {slide.type === "quote" && (
           <div className={cn("max-w-3xl", layoutClasses[slide.layout])}>
             <div className="relative">
-              <span className="absolute -left-8 -top-4 text-6xl text-accent-pink opacity-50">
+              <span
+                className="absolute -left-8 -top-4 text-6xl opacity-50"
+                style={{ color: colors.accent }}
+              >
                 &ldquo;
               </span>
               <EditableText
                 as="blockquote"
                 value={slide.quote}
                 onChange={onEditQuote}
-                className="text-2xl md:text-3xl lg:text-4xl text-text-primary italic leading-relaxed"
+                className="text-2xl md:text-3xl lg:text-4xl italic leading-relaxed"
                 placeholder="Enter quote..."
+                style={{ color: colors.text }}
               />
             </div>
             {(slide.attribution || isEditable) && (
@@ -318,8 +370,9 @@ export function SlidePreview({
                 as="p"
                 value={slide.attribution ? `— ${slide.attribution}` : undefined}
                 onChange={onEditAttribution}
-                className="mt-6 text-lg text-text-secondary"
+                className="mt-6 text-lg"
                 placeholder="— Attribution"
+                style={{ color: colors.textSecondary }}
               />
             )}
           </div>
@@ -328,13 +381,17 @@ export function SlidePreview({
         {/* Section Slide */}
         {slide.type === "section" && (
           <div className="text-center">
-            <div className="w-16 h-1 bg-accent-pink mx-auto mb-8" />
+            <div
+              className="w-16 h-1 mx-auto mb-8"
+              style={{ backgroundColor: colors.accent }}
+            />
             <EditableText
               as="h2"
               value={slide.title}
               onChange={onEditTitle}
-              className="text-4xl md:text-5xl font-bold text-text-primary"
+              className="text-4xl md:text-5xl font-bold"
               placeholder="Section Title"
+              style={{ color: colors.text }}
             />
           </div>
         )}
@@ -346,12 +403,13 @@ export function SlidePreview({
               as="h2"
               value={slide.title}
               onChange={onEditTitle}
-              className="text-3xl md:text-4xl font-bold text-text-primary mb-6 text-center"
+              className="text-3xl md:text-4xl font-bold mb-6 text-center"
               placeholder="Chart Title"
+              style={{ color: colors.text }}
             />
             <div className="h-[250px] md:h-[320px] lg:h-[380px]">
               <ResponsiveContainer width="100%" height="100%">
-                {renderChart(slide.chart_type, slide.chart_data, slide.chart_config)}
+                {renderChart(slide.chart_type, slide.chart_data, slide.chart_config, colors)}
               </ResponsiveContainer>
             </div>
             {/* Editable data table for chart editing */}

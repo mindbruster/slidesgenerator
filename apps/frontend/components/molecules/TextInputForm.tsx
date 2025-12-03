@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { Button, TextArea } from "@/components/atoms";
+import { ThemeSelector } from "./ThemeSelector";
 import { Sparkles } from "lucide-react";
+import type { ThemeName } from "@/lib/types/slide";
 
 interface TextInputFormProps {
-  onSubmit: (text: string) => Promise<void>;
+  onSubmit: (text: string, theme: ThemeName) => Promise<void>;
   isLoading?: boolean;
 }
 
 export function TextInputForm({ onSubmit, isLoading }: TextInputFormProps) {
   const [text, setText] = useState("");
+  const [theme, setTheme] = useState<ThemeName>("neobrutalism");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +26,7 @@ export function TextInputForm({ onSubmit, isLoading }: TextInputFormProps) {
     }
 
     try {
-      await onSubmit(text);
+      await onSubmit(text, theme);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     }
@@ -35,7 +38,20 @@ export function TextInputForm({ onSubmit, isLoading }: TextInputFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
-      <div className="space-y-4">
+      <div className="space-y-6">
+        {/* Theme selector */}
+        <div>
+          <label className="block text-sm font-semibold text-text-primary mb-3">
+            Choose a theme
+          </label>
+          <ThemeSelector
+            value={theme}
+            onChange={setTheme}
+            disabled={isLoading}
+          />
+        </div>
+
+        {/* Text input */}
         <TextArea
           value={text}
           onChange={(e) => setText(e.target.value)}

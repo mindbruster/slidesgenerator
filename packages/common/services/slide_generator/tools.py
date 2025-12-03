@@ -8,6 +8,18 @@ SLIDE_TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "get_current_theme",
+            "description": "Get the current presentation theme name and colors. Use this to understand the visual style of the presentation.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "add_slide",
             "description": "Add a slide to the presentation. Call this for each slide you want to create.",
             "parameters": {

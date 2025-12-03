@@ -143,6 +143,7 @@ export default function PresentationPage() {
             {currentSlide && (
               <SlidePreview
                 slide={currentSlide}
+                theme={(state.presentation?.theme as "neobrutalism" | "corporate" | "minimal" | "dark") || "neobrutalism"}
                 onEditTitle={(v) => handleUpdateSlide("title", v)}
                 onEditSubtitle={(v) => handleUpdateSlide("subtitle", v)}
                 onEditBody={(v) => handleUpdateSlide("body", v)}

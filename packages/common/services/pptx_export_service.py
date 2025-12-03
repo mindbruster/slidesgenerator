@@ -3,21 +3,32 @@ PPTX Export Service - generates editable PowerPoint presentations
 """
 
 from io import BytesIO
+from typing import TypedDict
 
 from pptx import Presentation as PptxPresentation
 from pptx.chart.data import CategoryChartData
 from pptx.dml.color import RGBColor
 from pptx.enum.chart import XL_CHART_TYPE
-from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
+from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
 from packages.common.models import Presentation, Slide
+from packages.common.themes import get_theme
 
-# Design system colors
-COLOR_BG = RGBColor(0xF4, 0xF4, 0xF0)  # #f4f4f0 cream
-COLOR_ACCENT = RGBColor(0xFF, 0x90, 0xE8)  # #ff90e8 pink
-COLOR_TEXT = RGBColor(0x0F, 0x0F, 0x0F)  # #0f0f0f dark
-COLOR_MUTED = RGBColor(0x6B, 0x6B, 0x6B)  # #6b6b6b gray
+
+class ThemeColors(TypedDict):
+    """Colors used for PPTX export"""
+
+    bg: RGBColor
+    accent: RGBColor
+    text: RGBColor
+    muted: RGBColor
+
+
+def _hex_to_rgb(hex_color: str) -> RGBColor:
+    """Convert hex color string to RGBColor"""
+    h = hex_color.lstrip("#")
+    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
 
 # Slide dimensions (16:9)
 SLIDE_WIDTH = Inches(13.333)
@@ -40,6 +51,15 @@ def generate_pptx(presentation: Presentation) -> bytes:
     Returns:
         bytes: The PPTX file as bytes
     """
+    # Get theme colors
+    theme = get_theme(presentation.theme or "neobrutalism")
+    colors: ThemeColors = {
+        "bg": _hex_to_rgb(theme.colors.background),
+        "accent": _hex_to_rgb(theme.colors.accent),
+        "text": _hex_to_rgb(theme.colors.text_primary),
+        "muted": _hex_to_rgb(theme.colors.text_secondary),
+    }
+
     prs = PptxPresentation()
     prs.slide_width = SLIDE_WIDTH
     prs.slide_height = SLIDE_HEIGHT
@@ -48,7 +68,7 @@ def generate_pptx(presentation: Presentation) -> bytes:
     sorted_slides = sorted(presentation.slides, key=lambda s: s.order)
 
     for slide in sorted_slides:
-        _add_slide(prs, slide)
+        _add_slide(prs, slide, colors)
 
     # Write to bytes
     buffer = BytesIO()
@@ -57,27 +77,27 @@ def generate_pptx(presentation: Presentation) -> bytes:
     return buffer.read()
 
 
-def _add_slide(prs: PptxPresentation, slide: Slide) -> None:
+def _add_slide(prs: PptxPresentation, slide: Slide, colors: ThemeColors) -> None:
     """Add a slide to the presentation based on its type"""
     if slide.type == "title":
-        _add_title_slide(prs, slide)
+        _add_title_slide(prs, slide, colors)
     elif slide.type == "bullets":
-        _add_bullets_slide(prs, slide)
+        _add_bullets_slide(prs, slide, colors)
     elif slide.type == "quote":
-        _add_quote_slide(prs, slide)
+        _add_quote_slide(prs, slide, colors)
     elif slide.type == "section":
-        _add_section_slide(prs, slide)
+        _add_section_slide(prs, slide, colors)
     elif slide.type == "chart":
-        _add_chart_slide(prs, slide)
+        _add_chart_slide(prs, slide, colors)
     else:
-        _add_content_slide(prs, slide)
+        _add_content_slide(prs, slide, colors)
 
 
-def _add_title_slide(prs: PptxPresentation, slide: Slide) -> None:
+def _add_title_slide(prs: PptxPresentation, slide: Slide, colors: ThemeColors) -> None:
     """Add a title slide with centered title and subtitle"""
     blank_layout = prs.slide_layouts[6]  # Blank layout
     pptx_slide = prs.slides.add_slide(blank_layout)
-    _set_slide_background(pptx_slide)
+    _set_slide_background(pptx_slide, colors)
 
     # Title - centered vertically and horizontally
     if slide.title:
@@ -93,7 +113,7 @@ def _add_title_slide(prs: PptxPresentation, slide: Slide) -> None:
         title_para.text = slide.title
         title_para.font.size = Pt(60)
         title_para.font.bold = True
-        title_para.font.color.rgb = COLOR_TEXT
+        title_para.font.color.rgb = colors["text"]
         title_para.alignment = PP_ALIGN.CENTER
         title_frame.auto_size = None
 
@@ -110,15 +130,15 @@ def _add_title_slide(prs: PptxPresentation, slide: Slide) -> None:
         sub_para = sub_frame.paragraphs[0]
         sub_para.text = slide.subtitle
         sub_para.font.size = Pt(28)
-        sub_para.font.color.rgb = COLOR_MUTED
+        sub_para.font.color.rgb = colors["muted"]
         sub_para.alignment = PP_ALIGN.CENTER
 
 
-def _add_bullets_slide(prs: PptxPresentation, slide: Slide) -> None:
+def _add_bullets_slide(prs: PptxPresentation, slide: Slide, colors: ThemeColors) -> None:
     """Add a slide with title and bullet points"""
     blank_layout = prs.slide_layouts[6]
     pptx_slide = prs.slides.add_slide(blank_layout)
-    _set_slide_background(pptx_slide)
+    _set_slide_background(pptx_slide, colors)
 
     # Title at top
     if slide.title:
@@ -133,7 +153,7 @@ def _add_bullets_slide(prs: PptxPresentation, slide: Slide) -> None:
         title_para.text = slide.title
         title_para.font.size = Pt(40)
         title_para.font.bold = True
-        title_para.font.color.rgb = COLOR_TEXT
+        title_para.font.color.rgb = colors["text"]
 
     # Bullets
     if slide.bullets:
@@ -153,15 +173,15 @@ def _add_bullets_slide(prs: PptxPresentation, slide: Slide) -> None:
                 para = bullets_frame.add_paragraph()
             para.text = f"• {bullet}"
             para.font.size = Pt(24)
-            para.font.color.rgb = COLOR_TEXT
+            para.font.color.rgb = colors["text"]
             para.space_after = Pt(16)
 
 
-def _add_content_slide(prs: PptxPresentation, slide: Slide) -> None:
+def _add_content_slide(prs: PptxPresentation, slide: Slide, colors: ThemeColors) -> None:
     """Add a slide with title and body text"""
     blank_layout = prs.slide_layouts[6]
     pptx_slide = prs.slides.add_slide(blank_layout)
-    _set_slide_background(pptx_slide)
+    _set_slide_background(pptx_slide, colors)
 
     # Title
     if slide.title:
@@ -176,7 +196,7 @@ def _add_content_slide(prs: PptxPresentation, slide: Slide) -> None:
         title_para.text = slide.title
         title_para.font.size = Pt(40)
         title_para.font.bold = True
-        title_para.font.color.rgb = COLOR_TEXT
+        title_para.font.color.rgb = colors["text"]
 
     # Body text
     if slide.body:
@@ -191,17 +211,17 @@ def _add_content_slide(prs: PptxPresentation, slide: Slide) -> None:
         body_para = body_frame.paragraphs[0]
         body_para.text = slide.body
         body_para.font.size = Pt(24)
-        body_para.font.color.rgb = COLOR_TEXT
+        body_para.font.color.rgb = colors["text"]
         body_para.line_spacing = 1.5
 
 
-def _add_quote_slide(prs: PptxPresentation, slide: Slide) -> None:
+def _add_quote_slide(prs: PptxPresentation, slide: Slide, colors: ThemeColors) -> None:
     """Add a slide with a styled quote and attribution"""
     blank_layout = prs.slide_layouts[6]
     pptx_slide = prs.slides.add_slide(blank_layout)
-    _set_slide_background(pptx_slide)
+    _set_slide_background(pptx_slide, colors)
 
-    # Pink accent bar on left
+    # Accent bar on left
     accent_bar = pptx_slide.shapes.add_shape(
         1,  # Rectangle
         Inches(1),
@@ -210,7 +230,7 @@ def _add_quote_slide(prs: PptxPresentation, slide: Slide) -> None:
         Inches(2.5),
     )
     accent_bar.fill.solid()
-    accent_bar.fill.fore_color.rgb = COLOR_ACCENT
+    accent_bar.fill.fore_color.rgb = colors["accent"]
     accent_bar.line.fill.background()
 
     # Quote text
@@ -227,7 +247,7 @@ def _add_quote_slide(prs: PptxPresentation, slide: Slide) -> None:
         quote_para.text = f'"{slide.quote}"'
         quote_para.font.size = Pt(32)
         quote_para.font.italic = True
-        quote_para.font.color.rgb = COLOR_TEXT
+        quote_para.font.color.rgb = colors["text"]
 
     # Attribution
     if slide.attribution:
@@ -241,14 +261,14 @@ def _add_quote_slide(prs: PptxPresentation, slide: Slide) -> None:
         attr_para = attr_frame.paragraphs[0]
         attr_para.text = f"— {slide.attribution}"
         attr_para.font.size = Pt(20)
-        attr_para.font.color.rgb = COLOR_MUTED
+        attr_para.font.color.rgb = colors["muted"]
 
 
-def _add_section_slide(prs: PptxPresentation, slide: Slide) -> None:
+def _add_section_slide(prs: PptxPresentation, slide: Slide, colors: ThemeColors) -> None:
     """Add a section divider slide with centered text"""
     blank_layout = prs.slide_layouts[6]
     pptx_slide = prs.slides.add_slide(blank_layout)
-    _set_slide_background(pptx_slide)
+    _set_slide_background(pptx_slide, colors)
 
     if slide.title:
         title_box = pptx_slide.shapes.add_textbox(
@@ -263,15 +283,15 @@ def _add_section_slide(prs: PptxPresentation, slide: Slide) -> None:
         title_para.text = slide.title
         title_para.font.size = Pt(48)
         title_para.font.bold = True
-        title_para.font.color.rgb = COLOR_TEXT
+        title_para.font.color.rgb = colors["text"]
         title_para.alignment = PP_ALIGN.CENTER
 
 
-def _add_chart_slide(prs: PptxPresentation, slide: Slide) -> None:
+def _add_chart_slide(prs: PptxPresentation, slide: Slide, colors: ThemeColors) -> None:
     """Add a slide with a chart"""
     blank_layout = prs.slide_layouts[6]
     pptx_slide = prs.slides.add_slide(blank_layout)
-    _set_slide_background(pptx_slide)
+    _set_slide_background(pptx_slide, colors)
 
     # Title
     if slide.title:
@@ -286,7 +306,7 @@ def _add_chart_slide(prs: PptxPresentation, slide: Slide) -> None:
         title_para.text = slide.title
         title_para.font.size = Pt(40)
         title_para.font.bold = True
-        title_para.font.color.rgb = COLOR_TEXT
+        title_para.font.color.rgb = colors["text"]
 
     # Chart
     if slide.chart_data and slide.chart_type:
@@ -336,13 +356,13 @@ def _add_chart_slide(prs: PptxPresentation, slide: Slide) -> None:
         msg_para = msg_frame.paragraphs[0]
         msg_para.text = "[Chart data not available]"
         msg_para.font.size = Pt(20)
-        msg_para.font.color.rgb = COLOR_MUTED
+        msg_para.font.color.rgb = colors["muted"]
         msg_para.alignment = PP_ALIGN.CENTER
 
 
-def _set_slide_background(pptx_slide) -> None:
-    """Set the cream background color for a slide"""
+def _set_slide_background(pptx_slide, colors: ThemeColors) -> None:
+    """Set the background color for a slide based on theme"""
     background = pptx_slide.background
     fill = background.fill
     fill.solid()
-    fill.fore_color.rgb = COLOR_BG
+    fill.fore_color.rgb = colors["bg"]

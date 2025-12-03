@@ -16,6 +16,7 @@ from packages.common.core.logging import get_logger
 from packages.common.models import Presentation, Slide
 from packages.common.providers.llm import OpenRouterProvider
 from packages.common.schemas import PresentationResponse
+from packages.common.themes import Theme, get_theme
 
 from .tools import SLIDE_TOOLS, SYSTEM_PROMPT
 
@@ -47,12 +48,14 @@ class SlideGeneratorService:
     def __init__(self, db: AsyncSession):
         self.db = db
         self.llm = OpenRouterProvider()
+        self.current_theme: Theme | None = None
 
     async def generate(
         self,
         text: str,
         slide_count: int = 8,
         title: str | None = None,
+        theme: str = "neobrutalism",
     ) -> PresentationResponse:
         """
         Generate a presentation from input text using tool calling.
@@ -61,17 +64,21 @@ class SlideGeneratorService:
             text: Raw text to transform into slides
             slide_count: Target number of slides (5-15)
             title: Optional presentation title (auto-generated if not provided)
+            theme: Presentation theme name
 
         Returns:
             PresentationResponse with generated slides
         """
         logger.info(f"Generating presentation with {slide_count} slides using tool calling")
 
+        # Set current theme for tool calls
+        self.current_theme = get_theme(theme)
+
         # Create presentation shell
         presentation = Presentation(
             title=title or "Untitled Presentation",
             input_text=text,
-            theme="default",
+            theme=theme,
         )
         self.db.add(presentation)
         await self.db.flush()  # Get presentation.id
@@ -162,6 +169,7 @@ class SlideGeneratorService:
         text: str,
         slide_count: int = 8,
         title: str | None = None,
+        theme: str = "neobrutalism",
     ) -> AsyncGenerator[AgentEvent, None]:
         """
         Generate a presentation with real-time event streaming.
@@ -169,6 +177,9 @@ class SlideGeneratorService:
         Yields AgentEvent objects for UI updates as the agent works.
         """
         logger.info(f"Streaming generation with {slide_count} slides")
+
+        # Set current theme for tool calls
+        self.current_theme = get_theme(theme)
 
         # Emit start event
         yield AgentEvent(
@@ -180,7 +191,7 @@ class SlideGeneratorService:
         presentation = Presentation(
             title=title or "Untitled Presentation",
             input_text=text,
-            theme="default",
+            theme=theme,
         )
         self.db.add(presentation)
         await self.db.flush()
@@ -362,7 +373,9 @@ class SlideGeneratorService:
             logger.error(f"Invalid tool arguments: {e}")
             return f"Error: Invalid arguments - {e}", False
 
-        if name == "add_slide":
+        if name == "get_current_theme":
+            return self._get_current_theme(), False
+        elif name == "add_slide":
             return await self._add_slide(args, presentation, slide_order)
         elif name == "finish_presentation":
             return await self._finish_presentation(args, presentation)
@@ -408,3 +421,16 @@ class SlideGeneratorService:
 
         logger.debug(f"Finishing presentation with title: {title}")
         return f"Presentation '{title}' completed successfully.", True
+
+    def _get_current_theme(self) -> str:
+        """Return current theme info for LLM context."""
+        if not self.current_theme:
+            return "Theme: neobrutalism (default)"
+
+        return (
+            f"Theme: {self.current_theme.display_name}\n"
+            f"Style: {self.current_theme.description}\n"
+            f"Colors: background={self.current_theme.colors.background}, "
+            f"accent={self.current_theme.colors.accent}, "
+            f"text={self.current_theme.colors.text_primary}"
+        )
