@@ -24,7 +24,9 @@
       "Bash(pip install:*)",
       "Bash(del \"\\?\\C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo\\nul\")",
       "Bash(cmd /c \"del \\?\\C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo\\nul\")",
-      "Bash(cmd /c \"cd /d C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo && dir nul\")"
+      "Bash(cmd /c \"cd /d C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo && dir nul\")",
+      "Bash(dir:*)",
+      "Bash(powershell -Command:*)"
     ],
     "deny": [],
     "ask": []

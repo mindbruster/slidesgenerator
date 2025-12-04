@@ -15,7 +15,7 @@ export function ChartSlide({
   const { colors, typography, layout } = theme;
 
   return (
-    <SlideContainer theme={theme}>
+    <SlideContainer theme={theme} imageUrl={slide.image_url}>
       <div
         className={cn(
           'h-full flex flex-col',

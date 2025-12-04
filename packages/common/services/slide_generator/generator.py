@@ -87,11 +87,15 @@ class SlideGeneratorService:
         self.db.add(presentation)
         await self.db.flush()  # Get presentation.id
 
+        # Build system prompt with theme-specific instructions
+        system_content = SYSTEM_PROMPT.format(slide_count=slide_count)
+        system_content += f"\n\nCURRENT THEME INFO:\n{self._get_current_theme()}"
+
         # Build initial messages
         messages: list[dict[str, Any]] = [
             {
                 "role": "system",
-                "content": SYSTEM_PROMPT.format(slide_count=slide_count),
+                "content": system_content,
             },
             {"role": "user", "content": text},
         ]
@@ -200,11 +204,15 @@ class SlideGeneratorService:
         self.db.add(presentation)
         await self.db.flush()
 
+        # Build system prompt with theme-specific instructions
+        system_content = SYSTEM_PROMPT.format(slide_count=slide_count)
+        system_content += f"\n\nCURRENT THEME INFO:\n{self._get_current_theme()}"
+
         # Build initial messages
         messages: list[dict[str, Any]] = [
             {
                 "role": "system",
-                "content": SYSTEM_PROMPT.format(slide_count=slide_count),
+                "content": system_content,
             },
             {"role": "user", "content": text},
         ]
@@ -478,10 +486,23 @@ class SlideGeneratorService:
         if not self.current_theme:
             return "Theme: neobrutalism (default)"
 
-        return (
+        theme_info = (
             f"Theme: {self.current_theme.display_name}\n"
             f"Style: {self.current_theme.description}\n"
             f"Colors: background={self.current_theme.colors.background}, "
             f"accent={self.current_theme.colors.accent}, "
             f"text={self.current_theme.colors.text_primary}"
         )
+
+        # Add special instructions for AI theme - it requires background images
+        if self.current_theme.name.value == "ai":
+            theme_info += (
+                "\n\nIMPORTANT: This theme is designed for futuristic AI/robotics presentations. "
+                "You MUST add image_query to EVERY slide for full-screen background images. "
+                "Use queries like: 'artificial intelligence neural network', 'futuristic robot', "
+                "'AI technology circuit board', 'machine learning visualization', "
+                "'robotic arm automation', 'digital brain neural connections', "
+                "'cyber technology abstract', 'autonomous AI system'."
+            )
+
+        return theme_info

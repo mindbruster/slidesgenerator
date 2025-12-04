@@ -8,7 +8,7 @@ export type SlideType =
   | "stats" | "big_number" | "comparison" | "timeline";
 export type SlideLayout = "left" | "center" | "right" | "split";
 export type ChartType = "bar" | "line" | "pie" | "donut" | "area" | "horizontal_bar";
-export type ThemeName = "neobrutalism" | "corporate" | "minimal" | "dark" | "magazine" | "terminal" | "playful";
+export type ThemeName = "neobrutalism" | "corporate" | "minimal" | "dark" | "magazine" | "terminal" | "playful" | "ai";
 
 // =============================================================================
 // THEME TYPE DEFINITIONS

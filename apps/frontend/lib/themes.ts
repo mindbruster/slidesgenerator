@@ -477,6 +477,72 @@ export const THEMES: Record<ThemeName, ThemeDefinition> = {
       vertical_position: 'center',
     },
   },
+
+  // ===========================================================================
+  // AI - Futuristic tech style with cyan accents and glow effects
+  // ===========================================================================
+  ai: {
+    name: 'ai',
+    display_name: 'AI',
+    description: 'Futuristic tech style with cyan accents, dark backgrounds, and robotic imagery',
+    colors: {
+      background: '#0a0e1a',
+      surface: '#121829',
+      text_primary: '#e0f2fe',
+      text_secondary: '#7dd3fc',
+      accent: '#00d4ff',
+      accent_hover: '#00b8e6',
+      accent_light: '#0c2d4d',
+      border: '#1e3a5f',
+      border_dark: '#00d4ff',
+    },
+    typography: {
+      heading_font: 'Orbitron, Inter, system-ui, sans-serif',
+      body_font: 'Inter, system-ui, sans-serif',
+      google_fonts: ['Orbitron:wght@400;500;600;700;800;900', 'Inter:wght@400;500;600'],
+      title_size: '6xl',
+      title_weight: 700,
+      title_letter_spacing: '0.05em',
+      title_transform: 'uppercase',
+      title_line_height: 1.1,
+      heading_size: '4xl',
+      heading_weight: 600,
+      heading_letter_spacing: '0.02em',
+      body_size: 'xl',
+      body_weight: 400,
+      body_line_height: 1.7,
+      quote_size: '3xl',
+      quote_style: 'normal',
+    },
+    style: {
+      border_width: '1px',
+      border_style: 'solid',
+      border_radius: '8px',
+      shadow: '0 0 30px 0 rgba(0,212,255,0.2)',
+      accent_bar_position: 'top',
+      accent_bar_width: '2px',
+      background_pattern: 'grid',
+      pattern_opacity: 0.05,
+      background_gradient: 'linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #1e1b4b 100%)',
+    },
+    spacing: {
+      slide_padding: '80px',
+      element_gap: '28px',
+      bullet_gap: '16px',
+      content_max_width: '100%',
+    },
+    decorations: {
+      bullet_style: 'arrow',
+      bullet_size: '12px',
+      quote_style: 'accent-bar',
+      section_divider: 'gradient',
+    },
+    layout: {
+      title_alignment: 'center',
+      content_alignment: 'left',
+      vertical_position: 'center',
+    },
+  },
 };
 
 export const DEFAULT_THEME: ThemeName = 'neobrutalism';

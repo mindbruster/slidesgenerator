@@ -66,8 +66,8 @@ export default function AppPage() {
     setSelectedTemplate(null);
   };
 
-  const handleFileSubmit = async (file: File, theme: ThemeName) => {
-    await generateFromFile(file, theme);
+  const handleFileSubmit = async (file: File, theme: ThemeName, slideCount: number) => {
+    await generateFromFile(file, theme, slideCount);
   };
 
   return (

@@ -25,6 +25,7 @@ class ThemeName(str, Enum):
     MAGAZINE = "magazine"
     TERMINAL = "terminal"
     PLAYFUL = "playful"
+    AI = "ai"
 
 
 # =============================================================================
@@ -574,6 +575,66 @@ THEMES: dict[str, Theme] = {
         layout=ThemeLayout(
             title_alignment="center",
             content_alignment="center",
+            vertical_position="center",
+        ),
+    ),
+    # -------------------------------------------------------------------------
+    # AI - Futuristic tech style with cyan accents and glow effects
+    # -------------------------------------------------------------------------
+    "ai": Theme(
+        name=ThemeName.AI,
+        display_name="AI",
+        description="Futuristic tech style with cyan accents, dark backgrounds, and robotic imagery. ALWAYS use image_query for background images on every slide.",
+        colors=ThemeColors(
+            background="#0a0e1a",
+            surface="#121829",
+            text_primary="#e0f2fe",
+            text_secondary="#7dd3fc",
+            accent="#00d4ff",
+            accent_hover="#00b8e6",
+            accent_light="#0c2d4d",
+            border="#1e3a5f",
+            border_dark="#00d4ff",
+        ),
+        typography=ThemeTypography(
+            heading_font="Orbitron, Inter, system-ui, sans-serif",
+            body_font="Inter, system-ui, sans-serif",
+            google_fonts=["Orbitron:wght@400;500;600;700;800;900", "Inter:wght@400;500;600"],
+            title_size="6xl",
+            title_weight=700,
+            title_letter_spacing="0.05em",
+            title_transform="uppercase",
+            heading_size="4xl",
+            heading_weight=600,
+            heading_letter_spacing="0.02em",
+            body_line_height=1.7,
+            quote_style="normal",
+        ),
+        style=ThemeStyle(
+            border_width="1px",
+            border_style="solid",
+            border_radius="8px",
+            shadow="0 0 30px 0 rgba(0,212,255,0.2)",
+            accent_bar_position="top",
+            accent_bar_width="2px",
+            background_pattern="grid",
+            pattern_opacity=0.05,
+            background_gradient="linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #1e1b4b 100%)",
+        ),
+        spacing=ThemeSpacing(
+            slide_padding="80px",
+            element_gap="28px",
+            bullet_gap="16px",
+        ),
+        decorations=ThemeDecorations(
+            bullet_style="arrow",
+            bullet_size="12px",
+            quote_style="accent-bar",
+            section_divider="gradient",
+        ),
+        layout=ThemeLayout(
+            title_alignment="center",
+            content_alignment="left",
             vertical_position="center",
         ),
     ),

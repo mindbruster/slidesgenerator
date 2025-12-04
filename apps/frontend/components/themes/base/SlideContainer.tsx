@@ -6,9 +6,9 @@ import { BackgroundPattern } from './BackgroundPattern';
 
 /**
  * Shared slide container that applies theme styling.
- * Handles: background, borders, shadows, accent bars, and patterns.
+ * Handles: background, borders, shadows, accent bars, patterns, and background images.
  */
-export function SlideContainer({ theme, children, className }: SlideContainerProps) {
+export function SlideContainer({ theme, children, className, imageUrl }: SlideContainerProps) {
   const { colors, style, spacing } = theme;
 
   // Build shadow CSS - append color if shadow is offset style
@@ -26,6 +26,15 @@ export function SlideContainer({ theme, children, className }: SlideContainerPro
 
   // Build background CSS - use gradient if available, otherwise solid color
   const getBackgroundCSS = (): React.CSSProperties => {
+    // If there's a background image, use it with a dark overlay for text readability
+    if (imageUrl) {
+      return {
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url(${imageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundColor: colors.background,
+      };
+    }
     if (style.background_gradient) {
       return {
         background: style.background_gradient,
@@ -35,6 +44,9 @@ export function SlideContainer({ theme, children, className }: SlideContainerPro
       backgroundColor: colors.background,
     };
   };
+
+  // When there's a background image, use white/light text for contrast
+  const hasBackgroundImage = !!imageUrl;
 
   return (
     <div
@@ -46,7 +58,12 @@ export function SlideContainer({ theme, children, className }: SlideContainerPro
         borderColor: colors.border_dark,
         borderRadius: style.border_radius,
         boxShadow: getShadowCSS(),
-      }}
+        // Apply CSS variable for child components to know about background image
+        '--has-bg-image': hasBackgroundImage ? '1' : '0',
+        '--bg-image-text-primary': hasBackgroundImage ? '#ffffff' : colors.text_primary,
+        '--bg-image-text-secondary': hasBackgroundImage ? '#e0e0e0' : colors.text_secondary,
+      } as React.CSSProperties}
+      data-has-bg-image={hasBackgroundImage}
     >
       {/* Background pattern overlay */}
       {style.background_pattern !== 'none' && (

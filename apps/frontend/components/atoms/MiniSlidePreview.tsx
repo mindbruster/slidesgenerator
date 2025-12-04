@@ -27,6 +27,11 @@ export function MiniSlidePreview({ slide, theme, scale = 0.15 }: MiniSlidePrevie
         style={{
           backgroundColor: themeConfig.colors.background,
           fontFamily: themeConfig.typography.body_font,
+          ...(slide.image_url && {
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url(${slide.image_url})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }),
         }}
       >
         {/* Accent bar */}
@@ -78,8 +83,13 @@ interface SlideContentProps {
 }
 
 function SlideContent({ slide, theme, scale }: SlideContentProps) {
+  // When there's a background image, use white text for better contrast
+  const hasBackgroundImage = !!slide.image_url;
+  const textPrimary = hasBackgroundImage ? '#ffffff' : theme.colors.text_primary;
+  const textSecondary = hasBackgroundImage ? '#e0e0e0' : theme.colors.text_secondary;
+
   const titleStyle = {
-    color: theme.colors.text_primary,
+    color: textPrimary,
     fontFamily: theme.typography.heading_font,
     fontWeight: theme.typography.title_weight,
     fontSize: `${getFontSize(theme.typography.title_size) * scale}px`,
@@ -90,7 +100,7 @@ function SlideContent({ slide, theme, scale }: SlideContentProps) {
   };
 
   const headingStyle = {
-    color: theme.colors.text_primary,
+    color: textPrimary,
     fontFamily: theme.typography.heading_font,
     fontWeight: theme.typography.heading_weight,
     fontSize: `${getFontSize(theme.typography.heading_size) * scale}px`,
@@ -99,7 +109,7 @@ function SlideContent({ slide, theme, scale }: SlideContentProps) {
   };
 
   const bodyStyle = {
-    color: theme.colors.text_secondary,
+    color: textSecondary,
     fontFamily: theme.typography.body_font,
     fontWeight: theme.typography.body_weight,
     fontSize: `${getFontSize(theme.typography.body_size) * scale}px`,
@@ -115,7 +125,7 @@ function SlideContent({ slide, theme, scale }: SlideContentProps) {
         <div className="flex flex-col" style={{ gap, textAlign: theme.layout.title_alignment }}>
           <h1 style={titleStyle}>{slide.title}</h1>
           {slide.subtitle && (
-            <p style={{ ...bodyStyle, color: theme.colors.text_secondary }}>
+            <p style={{ ...bodyStyle, color: textSecondary }}>
               {slide.subtitle}
             </p>
           )}
@@ -125,7 +135,7 @@ function SlideContent({ slide, theme, scale }: SlideContentProps) {
     case 'section':
       return (
         <div className="flex flex-col items-center justify-center">
-          <h2 style={{ ...titleStyle, color: theme.colors.accent }}>{slide.title}</h2>
+          <h2 style={{ ...titleStyle, color: hasBackgroundImage ? '#ffffff' : theme.colors.accent }}>{slide.title}</h2>
         </div>
       );
 
@@ -163,7 +173,7 @@ function SlideContent({ slide, theme, scale }: SlideContentProps) {
         <div className="flex flex-col items-center justify-center text-center" style={{ gap }}>
           <blockquote
             style={{
-              color: theme.colors.text_primary,
+              color: textPrimary,
               fontFamily: theme.typography.body_font,
               fontSize: `${getFontSize(theme.typography.quote_size) * scale}px`,
               fontStyle: theme.typography.quote_style,

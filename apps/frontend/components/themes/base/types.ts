@@ -59,6 +59,7 @@ export interface SlideContainerProps {
   theme: ThemeDefinition;
   children: React.ReactNode;
   className?: string;
+  imageUrl?: string | null;
 }
 
 /**

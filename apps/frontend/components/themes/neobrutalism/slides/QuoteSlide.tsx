@@ -49,7 +49,7 @@ export function QuoteSlide({
   };
 
   return (
-    <SlideContainer theme={theme}>
+    <SlideContainer theme={theme} imageUrl={slide.image_url}>
       <div
         className={cn(
           'h-full flex flex-col',

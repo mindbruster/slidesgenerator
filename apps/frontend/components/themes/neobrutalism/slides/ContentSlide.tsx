@@ -16,7 +16,7 @@ export function ContentSlide({
   const hasImage = !!slide.image_url;
 
   return (
-    <SlideContainer theme={theme}>
+    <SlideContainer theme={theme} imageUrl={slide.image_url}>
       <div
         className={cn(
           'h-full flex',

@@ -22,6 +22,7 @@ export interface TemplateSlide {
   attribution?: string;
   leftContent?: string[];
   rightContent?: string[];
+  image_url?: string;
 }
 
 export interface Template {
@@ -222,6 +223,57 @@ export const TEMPLATES: Template[] = [
       { type: 'content', title: 'Authentication', body: 'Bearer token authentication. Include header: Authorization: Bearer <your_api_key>' },
       { type: 'bullets', title: 'Core Endpoints', bullets: ['GET /users - List all users', 'POST /users - Create user', 'GET /users/:id - Get user details', 'PUT /users/:id - Update user'] },
       { type: 'two-column', title: 'Response Codes', leftContent: ['200 - Success', '201 - Created', '204 - No Content'], rightContent: ['400 - Bad Request', '401 - Unauthorized', '404 - Not Found'] },
+    ],
+  },
+  {
+    id: 'ai-future',
+    title: 'AI & Robotics',
+    description: 'Futuristic AI presentation with robot imagery',
+    category: 'technology',
+    theme: 'ai',
+    samplePrompt: 'Create a presentation about artificial intelligence and the future of automation.',
+    slides: [
+      {
+        type: 'title',
+        title: 'The Age of AI',
+        subtitle: 'Transforming Tomorrow',
+        image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1920&q=80',
+      },
+      {
+        type: 'section',
+        title: 'Machine Intelligence',
+        image_url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1920&q=80',
+      },
+      {
+        type: 'bullets',
+        title: 'AI Capabilities',
+        bullets: [
+          'Natural Language Processing & Understanding',
+          'Computer Vision & Image Recognition',
+          'Autonomous Decision Making',
+          'Predictive Analytics & Forecasting',
+        ],
+        image_url: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1920&q=80',
+      },
+      {
+        type: 'content',
+        title: 'Neural Networks',
+        body: 'Deep learning models that mimic the human brain, processing vast amounts of data to recognize patterns and make intelligent decisions.',
+        image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80',
+      },
+      {
+        type: 'two-column',
+        title: 'Impact Areas',
+        leftContent: ['Healthcare Diagnostics', 'Autonomous Vehicles', 'Smart Manufacturing'],
+        rightContent: ['Financial Analysis', 'Creative Content', 'Scientific Research'],
+        image_url: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=1920&q=80',
+      },
+      {
+        type: 'quote',
+        quote: 'The development of full artificial intelligence could spell the end of the human race... or the beginning of a new era.',
+        attribution: 'Technology Visionary',
+        image_url: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=1920&q=80',
+      },
     ],
   },
 

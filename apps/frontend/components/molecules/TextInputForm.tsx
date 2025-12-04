@@ -13,7 +13,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 interface TextInputFormProps {
   onSubmit: (text: string, theme: ThemeName, slideCount: number) => Promise<void>;
-  onFileSubmit?: (file: File, theme: ThemeName) => Promise<void>;
+  onFileSubmit?: (file: File, theme: ThemeName, slideCount: number) => Promise<void>;
   isLoading?: boolean;
   initialTemplate?: Template | null;
   onClearTemplate?: () => void;
@@ -48,7 +48,7 @@ export function TextInputForm({ onSubmit, onFileSubmit, isLoading, initialTempla
     // File upload mode
     if (selectedFile && onFileSubmit) {
       try {
-        await onFileSubmit(selectedFile, theme);
+        await onFileSubmit(selectedFile, theme, slideCount);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");
       }
