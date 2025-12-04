@@ -77,18 +77,50 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Slide content mockup */}
-              <div className="aspect-video bg-gradient-to-br from-bg-cream to-bg-white p-8 md:p-12">
-                <div className="h-full flex flex-col justify-center">
-                  <div className="space-y-4 max-w-lg">
-                    <div className="h-8 md:h-10 w-3/4 bg-bg-dark rounded-lg" />
-                    <div className="h-4 md:h-5 w-full bg-border rounded-md" />
-                    <div className="h-4 md:h-5 w-5/6 bg-border rounded-md" />
-                    <div className="h-4 md:h-5 w-2/3 bg-border rounded-md" />
-                    <div className="pt-4 flex gap-3">
-                      <div className="h-10 w-28 bg-accent-pink rounded-xl" />
-                      <div className="h-10 w-28 bg-bg-white border-2 border-border-dark rounded-xl" />
+              {/* Slide content mockup - Realistic slide preview */}
+              <div className="aspect-video bg-gradient-to-br from-bg-cream to-bg-white p-6 md:p-10">
+                <div className="h-full flex flex-col">
+                  {/* Slide title */}
+                  <h3 className="text-xl md:text-3xl lg:text-4xl font-bold text-text-primary mb-4 md:mb-6">
+                    Grow Your Business with AI
+                  </h3>
+
+                  {/* Slide content */}
+                  <div className="flex-1 flex gap-6 md:gap-10">
+                    {/* Left side - bullet points */}
+                    <div className="flex-1 space-y-3 md:space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 mt-2 rounded-full bg-accent-pink flex-shrink-0" />
+                        <p className="text-sm md:text-base text-text-secondary">Automate repetitive tasks and save 10+ hours weekly</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 mt-2 rounded-full bg-accent-pink flex-shrink-0" />
+                        <p className="text-sm md:text-base text-text-secondary">Increase customer engagement by 3x with personalization</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 mt-2 rounded-full bg-accent-pink flex-shrink-0" />
+                        <p className="text-sm md:text-base text-text-secondary">Scale operations without adding headcount</p>
+                      </div>
                     </div>
+
+                    {/* Right side - visual element */}
+                    <div className="hidden md:flex w-1/3 items-center justify-center">
+                      <div className="relative w-full aspect-square max-w-[160px]">
+                        <div className="absolute inset-0 bg-accent-pink/20 rounded-2xl rotate-6" />
+                        <div className="absolute inset-0 bg-accent-pink rounded-2xl flex items-center justify-center">
+                          <div className="text-center">
+                            <p className="text-3xl lg:text-4xl font-black text-text-primary">87%</p>
+                            <p className="text-xs text-text-primary/70 font-medium">Growth Rate</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Slide footer */}
+                  <div className="flex items-center justify-between pt-4 mt-auto border-t border-border-light">
+                    <span className="text-xs text-text-muted">AI Strategy 2025</span>
+                    <span className="text-xs font-medium text-accent-pink">Slide 3 of 8</span>
                   </div>
                 </div>
               </div>
