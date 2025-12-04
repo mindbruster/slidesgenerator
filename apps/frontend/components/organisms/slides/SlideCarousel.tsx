@@ -37,12 +37,12 @@ export function SlideCarousel({
       <div
         ref={scrollRef}
         className={cn(
-          "flex gap-3 p-4 overflow-x-auto",
+          "flex gap-2 px-4 py-2 overflow-x-auto",
           "scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
         )}
       >
         {slides.map((slide, index) => (
-          <div key={slide.id} className="flex-shrink-0 w-32">
+          <div key={slide.id} className="flex-shrink-0 w-28">
             <SlideCard
               slide={slide}
               index={index}

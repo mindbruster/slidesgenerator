@@ -141,9 +141,9 @@ export default function PresentationPage() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col">
-        {/* Slide Preview Area */}
-        <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-          <div className="w-full max-w-5xl">
+        {/* Slide Preview Area - Larger */}
+        <div className="flex-1 flex items-center justify-center p-4 md:p-6">
+          <div className="w-full max-w-7xl">
             {currentSlide && (
               <SlidePreview
                 slide={currentSlide}

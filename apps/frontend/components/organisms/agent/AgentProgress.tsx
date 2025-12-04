@@ -265,31 +265,28 @@ function ToolCallItem({ event, isLatest, onClick }: { event: AgentEvent; isLates
     return (
       <div
         className={cn(
-          'flex items-start gap-3 py-3 px-4 rounded-xl transition-all animate-fade-in cursor-pointer hover:shadow-md',
-          isLatest ? 'bg-accent-pink/10 border-2 border-accent-pink/30' : 'bg-bg-cream hover:bg-bg-white'
+          'flex items-center gap-2 py-2 px-3 rounded-lg transition-all animate-fade-in cursor-pointer hover:shadow-sm',
+          isLatest ? 'bg-accent-pink/10 border border-accent-pink/30' : 'bg-bg-cream hover:bg-bg-white'
         )}
         onClick={onClick}
       >
-        <span className="text-2xl">{getSlideIcon(slideType)}</span>
+        <span className="text-base">{getSlideIcon(slideType)}</span>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-base font-semibold text-text-primary">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-semibold text-text-primary">
               Slide {event.slide_number}
             </span>
-            <span className="text-xs px-2 py-1 bg-bg-white border border-border rounded-full text-text-muted capitalize">
+            <span className="text-[10px] px-1.5 py-0.5 bg-bg-white border border-border rounded text-text-muted capitalize">
               {slideType}
             </span>
           </div>
-          <p className="text-sm text-text-secondary truncate">{title}</p>
+          <p className="text-xs text-text-secondary truncate">{title}</p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0 mt-1">
-          {!isLatest && (
-            <Eye className="w-4 h-4 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
-          )}
+        <div className="flex-shrink-0">
           {isLatest ? (
-            <Loader2 className="w-5 h-5 text-accent-pink animate-spin" />
+            <Loader2 className="w-4 h-4 text-accent-pink animate-spin" />
           ) : (
-            <Check className="w-5 h-5 text-green-500" />
+            <Check className="w-4 h-4 text-green-500" />
           )}
         </div>
       </div>
@@ -298,9 +295,9 @@ function ToolCallItem({ event, isLatest, onClick }: { event: AgentEvent; isLates
 
   if (event.tool === 'finish_presentation') {
     return (
-      <div className="flex items-center gap-3 py-3 px-4 rounded-xl bg-green-50 border-2 border-green-200 animate-fade-in">
-        <Sparkles className="w-5 h-5 text-green-600" />
-        <span className="text-base font-semibold text-green-700">
+      <div className="flex items-center gap-2 py-2 px-3 rounded-lg bg-green-50 border border-green-200 animate-fade-in">
+        <Sparkles className="w-4 h-4 text-green-600" />
+        <span className="text-xs font-semibold text-green-700">
           Finalizing presentation...
         </span>
       </div>
@@ -370,28 +367,28 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
         </div>
       </div>
 
-      {/* Main content - side by side */}
-      <div className="grid lg:grid-cols-2 gap-8 items-start">
-        {/* Left: Agent Activity */}
-        <div className="space-y-6 lg:sticky lg:top-8">
-          {/* Thinking bubble */}
+      {/* Main content - side by side with larger preview */}
+      <div className="grid lg:grid-cols-[320px_1fr] gap-6 items-start">
+        {/* Left: Agent Activity - Compact */}
+        <div className="space-y-4 lg:sticky lg:top-8">
+          {/* Thinking bubble - Compact */}
           {latestThinking && !isComplete && (
             <ThinkingBubble message={latestThinking.message!} />
           )}
 
-          {/* Activity log */}
-          <div className="bg-bg-white border-2 border-border-dark rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_#0f0f0f]">
-            <div className="px-6 py-4 border-b-2 border-border bg-bg-cream">
-              <h4 className="text-lg font-bold text-text-primary">Activity Log</h4>
+          {/* Activity log - Smaller */}
+          <div className="bg-bg-white border-2 border-border-dark rounded-xl overflow-hidden shadow-[3px_3px_0px_0px_#0f0f0f]">
+            <div className="px-4 py-3 border-b-2 border-border bg-bg-cream">
+              <h4 className="text-sm font-bold text-text-primary">Activity Log</h4>
             </div>
             <div
               ref={activityRef}
-              className="p-4 max-h-[500px] overflow-y-auto space-y-3"
+              className="p-3 max-h-[280px] overflow-y-auto space-y-2"
             >
               {toolEvents.length === 0 ? (
-                <div className="flex items-center justify-center gap-3 py-12 text-text-muted">
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                  <span className="text-lg">Starting generation...</span>
+                <div className="flex items-center justify-center gap-2 py-8 text-text-muted">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span className="text-sm">Starting generation...</span>
                 </div>
               ) : (
                 toolEvents.map((event, index) => (
@@ -406,15 +403,15 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
 
               {/* Completion message */}
               {completeEvent && (
-                <div className="flex items-center gap-4 py-4 px-4 mt-4 rounded-xl bg-green-100 border-2 border-green-300">
-                  <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center shadow-[2px_2px_0px_0px_#166534]">
-                    <Check className="w-6 h-6 text-white" />
+                <div className="flex items-center gap-3 py-3 px-3 mt-2 rounded-lg bg-green-100 border-2 border-green-300">
+                  <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-[2px_2px_0px_0px_#166534]">
+                    <Check className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-lg font-bold text-green-800">
+                    <p className="text-sm font-bold text-green-800">
                       {completeEvent.title}
                     </p>
-                    <p className="text-sm text-green-600">
+                    <p className="text-xs text-green-600">
                       {completeEvent.slide_count} slides created successfully
                     </p>
                   </div>
@@ -423,16 +420,26 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
             </div>
           </div>
 
-          {/* Action Buttons - Outside the Activity Log box */}
+          {/* Action Buttons - Compact */}
           {completeEvent && (
-            <div className="flex flex-col gap-3 mt-4">
+            <div className="flex flex-col gap-2">
               {onViewPresentation && (
                 <button
                   onClick={onViewPresentation}
-                  className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-accent-pink text-text-primary font-bold text-lg rounded-xl border-2 border-border-dark shadow-[4px_4px_0px_0px_#0f0f0f] hover:shadow-[2px_2px_0px_0px_#0f0f0f] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-accent-pink text-text-primary font-bold text-sm rounded-lg border-2 border-border-dark shadow-[3px_3px_0px_0px_#0f0f0f] hover:shadow-[1px_1px_0px_0px_#0f0f0f] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   <span>View Presentation</span>
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+
+              {onCreateNew && (
+                <button
+                  onClick={onCreateNew}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-bg-white text-text-primary font-medium text-sm rounded-lg border-2 border-border hover:border-border-dark hover:bg-bg-cream transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create New Presentation</span>
                 </button>
               )}
 
@@ -440,26 +447,26 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
               {onRegenerate && (
                 <div className="space-y-2">
                   {showThemeSelector ? (
-                    <div className="p-4 bg-bg-white border-2 border-border rounded-xl space-y-3">
+                    <div className="p-3 bg-bg-white border-2 border-border rounded-lg space-y-2">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-semibold text-text-primary flex items-center gap-2">
-                          <Palette className="w-4 h-4" />
+                        <label className="text-xs font-semibold text-text-primary flex items-center gap-1">
+                          <Palette className="w-3 h-3" />
                           Select Theme
                         </label>
                         <button
                           onClick={() => setShowThemeSelector(false)}
-                          className="p-1 hover:bg-bg-cream rounded-lg"
+                          className="p-1 hover:bg-bg-cream rounded"
                         >
-                          <X className="w-4 h-4 text-text-muted" />
+                          <X className="w-3 h-3 text-text-muted" />
                         </button>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-1.5">
                         {THEME_LIST.map((t) => (
                           <button
                             key={t.name}
                             onClick={() => setSelectedTheme(t.name as ThemeName)}
                             className={cn(
-                              'px-3 py-2 text-sm text-left rounded-lg border-2 transition-all',
+                              'px-2 py-1.5 text-xs text-left rounded border-2 transition-all',
                               selectedTheme === t.name
                                 ? 'border-accent-pink bg-accent-pink/10 text-text-primary font-medium'
                                 : 'border-border hover:border-border-dark bg-bg-cream text-text-secondary'
@@ -474,40 +481,30 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
                           onRegenerate(selectedTheme);
                           setShowThemeSelector(false);
                         }}
-                        className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-bg-dark text-text-inverse font-semibold rounded-lg hover:bg-text-primary transition-colors"
+                        className="w-full flex items-center justify-center gap-1.5 py-2 px-3 bg-bg-dark text-text-inverse font-medium text-xs rounded hover:bg-text-primary transition-colors"
                       >
-                        <RefreshCw className="w-4 h-4" />
-                        <span>Regenerate with {THEMES[selectedTheme]?.display_name}</span>
+                        <RefreshCw className="w-3 h-3" />
+                        <span>Regenerate</span>
                       </button>
                     </div>
                   ) : (
                     <button
                       onClick={() => setShowThemeSelector(true)}
-                      className="w-full flex items-center justify-center gap-3 py-3 px-6 bg-bg-cream text-text-primary font-semibold rounded-xl border-2 border-border hover:border-border-dark transition-all"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-bg-cream text-text-primary font-medium text-sm rounded-lg border-2 border-border hover:border-border-dark transition-all"
                     >
-                      <RefreshCw className="w-5 h-5" />
-                      <span>Regenerate Presentation</span>
+                      <RefreshCw className="w-4 h-4" />
+                      <span>Regenerate</span>
                     </button>
                   )}
                 </div>
-              )}
-
-              {onCreateNew && (
-                <button
-                  onClick={onCreateNew}
-                  className="w-full flex items-center justify-center gap-3 py-3 px-6 bg-bg-white text-text-primary font-semibold rounded-xl border-2 border-border hover:border-border-dark hover:bg-bg-cream transition-all"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span>Create New Presentation</span>
-                </button>
               )}
             </div>
           )}
         </div>
 
-        {/* Right: Live Preview */}
-        <div className="space-y-6">
-          {/* Current slide preview */}
+        {/* Right: Live Preview - Larger */}
+        <div className="space-y-4">
+          {/* Current slide preview - Full size */}
           {currentSlide ? (
             <SlidePreview slide={currentSlide} theme={theme} isEditable={false} />
           ) : (
@@ -533,24 +530,24 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
             </div>
           )}
 
-          {/* Slide navigation */}
+          {/* Slide navigation - Compact */}
           {slides.length > 0 && (
-            <div className="flex items-center gap-4 bg-bg-white border-2 border-border rounded-xl p-4">
+            <div className="flex items-center gap-3 bg-bg-white border-2 border-border rounded-lg p-3">
               <button
                 onClick={() => setCurrentSlideIndex((i) => Math.max(0, i - 1))}
                 disabled={currentSlideIndex === 0}
-                className="p-2 rounded-lg hover:bg-bg-cream disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg hover:bg-bg-cream disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
 
-              <div className="flex-1 flex items-center justify-center gap-2">
+              <div className="flex-1 flex items-center justify-center gap-1.5">
                 {slides.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlideIndex(index)}
                     className={cn(
-                      'w-3 h-3 rounded-full transition-all',
+                      'w-2.5 h-2.5 rounded-full transition-all',
                       index === currentSlideIndex ? 'scale-125' : 'hover:opacity-70'
                     )}
                     style={{
@@ -568,12 +565,12 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
                   setCurrentSlideIndex((i) => Math.min(slides.length - 1, i + 1))
                 }
                 disabled={currentSlideIndex === slides.length - 1}
-                className="p-2 rounded-lg hover:bg-bg-cream disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg hover:bg-bg-cream disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4" />
               </button>
 
-              <span className="text-sm font-medium text-text-muted ml-2">
+              <span className="text-xs font-medium text-text-muted ml-1">
                 {currentSlideIndex + 1} / {slides.length}
               </span>
             </div>

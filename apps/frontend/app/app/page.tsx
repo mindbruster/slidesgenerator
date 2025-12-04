@@ -145,24 +145,6 @@ export default function AppPage() {
                 </div>
               </div>
 
-              {/* Selected Template Indicator */}
-              {selectedTemplate && (
-                <div className="max-w-4xl mx-auto px-6 pb-4">
-                  <div className="flex items-center gap-3 p-3 bg-accent-pink-light rounded-xl border-2 border-accent-pink">
-                    <span className="text-sm font-medium text-text-primary">
-                      Using template: <strong>{selectedTemplate.title}</strong>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleClearTemplate}
-                      className="ml-auto text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                </div>
-              )}
-
               {/* Input Form */}
               <div className="max-w-4xl mx-auto px-6 pb-12">
                 <div className="animate-slide-up">
