@@ -6,7 +6,6 @@ import { TextInputForm } from "@/components/molecules";
 import { AgentProgress } from "@/components/organisms/agent";
 import { TemplateSidebar } from "@/components/organisms/templates";
 import { useSlides } from "@/contexts/SlidesContext";
-import { Layers } from "lucide-react";
 import type { ThemeName } from "@/lib/types/slide";
 import type { Template } from "@/lib/templates";
 
@@ -108,14 +107,6 @@ export default function AppPage() {
             <div className="relative">
               {/* Hero header */}
               <div className="max-w-4xl mx-auto px-6 pt-12 pb-8">
-                {/* Logo */}
-                <div className="flex items-center justify-center gap-3 mb-10">
-                  <div className="w-12 h-12 bg-bg-dark rounded-xl flex items-center justify-center shadow-[2px_2px_0px_0px_#ff90e8]">
-                    <Layers className="w-6 h-6 text-text-inverse" />
-                  </div>
-                  <span className="text-2xl font-bold text-text-primary">Decksnap</span>
-                </div>
-
                 {/* Headline */}
                 <div className="text-center mb-10">
                   <h1 className="text-4xl md:text-5xl font-bold text-text-primary mb-5 leading-tight">

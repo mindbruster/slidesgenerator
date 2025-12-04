@@ -51,6 +51,7 @@ export function TemplateSidebar({ onSelectTemplate, selectedTemplate }: Template
 
   const handleSelectTemplate = (template: Template) => {
     onSelectTemplate(template);
+    setIsCollapsed(true); // Auto-collapse sidebar after selecting a template
   };
 
   const handlePreviewTemplate = (template: Template, e: React.MouseEvent) => {

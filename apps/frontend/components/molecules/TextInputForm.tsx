@@ -32,19 +32,14 @@ export function TextInputForm({ onSubmit, onFileSubmit, isLoading, initialTempla
   // Update form when template is selected
   useEffect(() => {
     if (initialTemplate) {
-      // Only set template's sample prompt if user hasn't entered their own content
-      // Preserve user's content if they've already typed something
-      if (text.trim().length === 0) {
-        setText(initialTemplate.samplePrompt);
-      }
+      // Set theme and slide count from template, but don't auto-fill the prompt
       setTheme(initialTemplate.theme);
-      // Also set slide count to template's slide count if reasonable
       const templateSlideCount = initialTemplate.slides.length;
       if (templateSlideCount >= 5 && templateSlideCount <= 15) {
         setSlideCount(templateSlideCount);
       }
     }
-  }, [initialTemplate?.id]); // Use id for more reliable change detection
+  }, [initialTemplate?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
