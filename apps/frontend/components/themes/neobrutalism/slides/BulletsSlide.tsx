@@ -12,19 +12,22 @@ export function BulletsSlide({
   onEditTitle,
   onEditBullet,
 }: SlideComponentProps) {
-  const { colors, typography, layout, spacing, decorations } = theme;
+  const { colors, typography, layout, spacing, decorations, style } = theme;
+  const hasImage = !!slide.image_url;
 
   return (
     <SlideContainer theme={theme}>
       <div
         className={cn(
-          'h-full flex flex-col',
+          'h-full flex',
+          hasImage ? 'flex-row gap-8' : 'flex-col',
           getVerticalPositionClasses(layout.vertical_position)
         )}
       >
+        {/* Text content */}
         <div
-          className="w-full"
-          style={{ maxWidth: spacing.content_max_width }}
+          className={cn('flex flex-col justify-center', hasImage ? 'w-1/2' : 'w-full')}
+          style={{ maxWidth: hasImage ? undefined : spacing.content_max_width }}
         >
           {(slide.title || isEditable) && (
             <EditableText
@@ -74,6 +77,35 @@ export function BulletsSlide({
             ))}
           </ul>
         </div>
+
+        {/* Image */}
+        {hasImage && (
+          <div className="w-1/2 flex flex-col justify-center">
+            <div
+              className="relative overflow-hidden"
+              style={{
+                borderRadius: style.border_radius,
+                border: style.border_style !== 'none' ? `${style.border_width} ${style.border_style} ${colors.border_dark}` : undefined,
+                boxShadow: style.shadow || undefined,
+              }}
+            >
+              <img
+                src={slide.image_url!}
+                alt={slide.image_alt || slide.title || 'Slide image'}
+                className="w-full h-auto object-cover"
+                style={{ maxHeight: '400px' }}
+              />
+            </div>
+            {slide.image_credit && (
+              <p
+                className="mt-2 text-xs opacity-60"
+                style={{ color: colors.text_secondary }}
+              >
+                {slide.image_credit}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </SlideContainer>
   );

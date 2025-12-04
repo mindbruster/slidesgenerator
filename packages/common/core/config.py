@@ -20,12 +20,15 @@ class Settings(BaseSettings):
     )
 
     # Database
-    database_url: str = "postgresql+asyncpg://decksnap:decksnap@localhost:5432/decksnap"
+    database_url: str = "postgresql+asyncpg://decksnap:decksnap@localhost:5433/decksnap"
 
     # OpenRouter API
     openrouter_api_key: str = ""
     openrouter_model: str = "@preset/pup"
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
+
+    # Unsplash API (for stock images)
+    unsplash_access_key: str = ""
 
     # Application
     debug: bool = True

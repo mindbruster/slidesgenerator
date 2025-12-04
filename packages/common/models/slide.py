@@ -62,6 +62,11 @@ class Slide(Base, TimestampMixin):
     chart_data: Mapped[list[dict[str, Any]] | None] = mapped_column(JSON, nullable=True)
     chart_config: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 
+    # Image fields (for slides with images from Unsplash)
+    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    image_alt: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    image_credit: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
     # Layout
     layout: Mapped[str] = mapped_column(String(50), default="center", nullable=False)
     order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

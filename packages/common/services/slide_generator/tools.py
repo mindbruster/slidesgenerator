@@ -88,6 +88,10 @@ SLIDE_TOOLS = [
                         },
                         "description": "Optional chart configuration",
                     },
+                    "image_query": {
+                        "type": "string",
+                        "description": "Search keywords to find a relevant stock image for this slide. Use descriptive terms like 'business meeting', 'technology', 'teamwork'. Recommended for content and bullets slides.",
+                    },
                 },
                 "required": ["slide_type", "title"],
             },
@@ -132,12 +136,19 @@ CHART GUIDELINES:
 - Provide 3-8 data points with clear labels and realistic values
 - Always include a descriptive title for chart slides
 
+IMAGE GUIDELINES:
+- Add image_query to content, bullets, and section slides to include relevant stock photos
+- Use descriptive, specific keywords (e.g., "business team collaboration", "modern office workspace", "data analytics dashboard")
+- Images make presentations more engaging and professional
+- Don't add images to title, quote, or chart slides
+
 RULES:
 1. First slide MUST be type "title"
 2. Create exactly {slide_count} slides total
 3. Use varied slide types for visual interest
 4. ACTIVELY LOOK FOR opportunities to use chart slides - statistics, comparisons, growth, distributions, percentages
-5. Keep text content concise and impactful
-6. After creating all slides, call finish_presentation with the presentation title
+5. ADD image_query to most content and bullets slides for visual appeal
+6. Keep text content concise and impactful
+7. After creating all slides, call finish_presentation with the presentation title
 
 Create slides now based on the user's text."""

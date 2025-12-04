@@ -45,6 +45,10 @@ class SlideBase(BaseModel):
     chart_type: ChartType | None = None
     chart_data: list[ChartDataPoint] | None = None
     chart_config: ChartConfig | None = None
+    # Image fields
+    image_url: str | None = None
+    image_alt: str | None = None
+    image_credit: str | None = None
 
 
 class SlideCreate(SlideBase):
@@ -69,6 +73,10 @@ class SlideUpdate(BaseModel):
     chart_type: ChartType | None = None
     chart_data: list[ChartDataPoint] | None = None
     chart_config: ChartConfig | None = None
+    # Image fields
+    image_url: str | None = None
+    image_alt: str | None = None
+    image_credit: str | None = None
 
 
 class SlideResponse(SlideBase):
