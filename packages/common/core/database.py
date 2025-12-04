@@ -52,3 +52,6 @@ AsyncSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 
 # Alias for convenience
 get_db = get_db_session
+
+# Context manager for standalone scripts
+async_session_factory = AsyncSessionLocal

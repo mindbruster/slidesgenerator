@@ -14,7 +14,7 @@ from packages.common.core.config import settings
 from packages.common.models.base import Base
 
 # Import all models to ensure they are registered with Base.metadata
-from packages.common.models import Presentation, Slide  # noqa: F401
+from packages.common.models import APIKey, Presentation, Slide  # noqa: F401
 
 # Alembic Config object
 config = context.config

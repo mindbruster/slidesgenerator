@@ -22,12 +22,15 @@ apps/
 │   ├── components/        # Atomic design: atoms/ → molecules/ → organisms/
 │   ├── contexts/          # React Context (SlidesContext)
 │   └── lib/api/           # APIClient + repositories pattern
-└── slides_api/            # FastAPI backend (port 18000)
-    └── api/v1/            # Versioned routes (slides, presentations, export)
+├── slides_api/            # FastAPI backend (port 18000) - internal API for frontend
+│   └── api/v1/            # Versioned routes (slides, presentations, export)
+└── public_api/            # FastAPI backend (port 19000) - external API with API key auth
+    ├── dependencies.py    # API key validation middleware
+    └── api/v1/            # Versioned routes (slides, presentations, export, keys)
 
 packages/common/           # Shared Python code (DRY principle)
 ├── core/                  # Config, database, logging
-├── models/                # SQLAlchemy ORM models
+├── models/                # SQLAlchemy ORM models (Presentation, Slide, APIKey)
 ├── schemas/               # Pydantic request/response validation
 ├── services/              # Business logic layer
 └── providers/llm/         # OpenRouter integration
@@ -41,7 +44,8 @@ infra/alembic/             # Database migrations
 make install              # Install Poetry + npm dependencies
 make dev                  # Start all services via Honcho
 make frontend             # Frontend only (port 13000, Turbopack)
-make backend              # API only (port 18000, auto-reload)
+make backend              # Slides API only (port 18000, auto-reload)
+make public-api           # Public API only (port 19000, auto-reload)
 make migrate              # Run Alembic migrations
 make migrate-create name=foo  # Create new migration
 make lint                 # Ruff + ESLint
@@ -83,4 +87,22 @@ docker run -d --name decksnap-postgres -e POSTGRES_USER=decksnap -e POSTGRES_PAS
 **Ports:**
 - Frontend: 13000
 - Slides API: 18000
+- Public API: 19000
 - PostgreSQL: 5432
+
+## Public API
+
+External API for third-party integrations. Requires API key authentication via `X-API-Key` header.
+
+**Key format:** `dk_live_<random>` or `dk_test_<random>`
+
+**Endpoints:**
+- `POST /api/v1/slides/generate` - Generate slides from text
+- `GET /api/v1/presentations` - List presentations (scoped to API key)
+- `GET /api/v1/presentations/{id}` - Get presentation
+- `DELETE /api/v1/presentations/{id}` - Delete presentation
+- `GET /api/v1/export/pdf/{id}` - Export to PDF
+- `GET /api/v1/export/pptx/{id}` - Export to PPTX
+- `POST /api/v1/keys` - Create API key (requires `admin:keys` scope)
+
+**Scopes:** `*` (all), `slides:read`, `slides:write`, `presentations:read`, `presentations:write`, `export`, `admin:keys`

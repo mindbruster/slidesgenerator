@@ -1,4 +1,4 @@
-.PHONY: help install setup dev frontend backend lint format test migrate migrate-create clean kill-ports
+.PHONY: help install setup dev frontend backend public-api lint format test migrate migrate-create clean kill-ports
 
 # Colors for terminal output
 BLUE := \033[34m
@@ -52,6 +52,9 @@ frontend:
 
 backend:
 	poetry run uvicorn apps.slides_api.main:app --host 0.0.0.0 --port 18000 --reload
+
+public-api:
+	poetry run uvicorn apps.public_api.main:app --host 0.0.0.0 --port 19000 --reload
 
 lint:
 	poetry run ruff check packages apps

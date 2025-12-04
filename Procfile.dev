@@ -1,2 +1,3 @@
 slides_api: poetry run uvicorn apps.slides_api.main:app --host 0.0.0.0 --port 18000 --reload
+public_api: poetry run uvicorn apps.public_api.main:app --host 0.0.0.0 --port 19000 --reload
 frontend: cd apps/frontend && npm run dev -- --port 13000

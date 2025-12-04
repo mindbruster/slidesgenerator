@@ -56,6 +56,7 @@ class SlideGeneratorService:
         slide_count: int = 8,
         title: str | None = None,
         theme: str = "neobrutalism",
+        api_key_id: int | None = None,
     ) -> PresentationResponse:
         """
         Generate a presentation from input text using tool calling.
@@ -65,6 +66,7 @@ class SlideGeneratorService:
             slide_count: Target number of slides (5-15)
             title: Optional presentation title (auto-generated if not provided)
             theme: Presentation theme name
+            api_key_id: Optional API key ID (for public API tracking)
 
         Returns:
             PresentationResponse with generated slides
@@ -79,6 +81,7 @@ class SlideGeneratorService:
             title=title or "Untitled Presentation",
             input_text=text,
             theme=theme,
+            api_key_id=api_key_id,
         )
         self.db.add(presentation)
         await self.db.flush()  # Get presentation.id

@@ -1,4 +1,12 @@
 # Pydantic schemas
+from packages.common.schemas.api_key_schema import (
+    APIKeyCreate,
+    APIKeyCreateResponse,
+    APIKeyListResponse,
+    APIKeyResponse,
+    APIKeyUpdate,
+    APIKeyValidation,
+)
 from packages.common.schemas.slide_schema import (
     SlideBase,
     SlideCreate,
@@ -15,6 +23,12 @@ from packages.common.schemas.presentation_schema import (
 )
 
 __all__ = [
+    "APIKeyCreate",
+    "APIKeyCreateResponse",
+    "APIKeyListResponse",
+    "APIKeyResponse",
+    "APIKeyUpdate",
+    "APIKeyValidation",
     "SlideBase",
     "SlideCreate",
     "SlideResponse",
