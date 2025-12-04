@@ -40,6 +40,45 @@ export const SlidesRepository = {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
+    await this._processSSEStream(response, onEvent);
+  },
+
+  /**
+   * Generate slides from uploaded file with SSE streaming
+   */
+  async generateFromFileStream(
+    file: File,
+    options: { slideCount?: number; title?: string; theme?: string },
+    onEvent: (event: AgentEvent) => void
+  ): Promise<void> {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:18000";
+
+    const formData = new FormData();
+    formData.append("file", file);
+    if (options.slideCount) formData.append("slide_count", options.slideCount.toString());
+    if (options.title) formData.append("title", options.title);
+    if (options.theme) formData.append("theme", options.theme);
+
+    const response = await fetch(`${baseUrl}/api/v1/slides/generate/upload/stream`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `HTTP error! status: ${response.status}`);
+    }
+
+    await this._processSSEStream(response, onEvent);
+  },
+
+  /**
+   * Process SSE stream from response
+   */
+  async _processSSEStream(
+    response: Response,
+    onEvent: (event: AgentEvent) => void
+  ): Promise<void> {
     const reader = response.body?.getReader();
     if (!reader) {
       throw new Error("No response body");

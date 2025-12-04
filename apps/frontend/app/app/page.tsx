@@ -10,7 +10,7 @@ import type { ThemeName } from "@/lib/types/slide";
 
 export default function AppPage() {
   const router = useRouter();
-  const { state, generateSlides } = useSlides();
+  const { state, generateSlides, generateFromFile } = useSlides();
 
   const isComplete = state.agentEvents.some((e) => e.type === "complete");
   const isGenerating = state.isGenerating || state.agentEvents.length > 0;
@@ -27,6 +27,10 @@ export default function AppPage() {
 
   const handleSubmit = async (text: string, theme: ThemeName) => {
     await generateSlides(text, theme);
+  };
+
+  const handleFileSubmit = async (file: File, theme: ThemeName) => {
+    await generateFromFile(file, theme);
   };
 
   return (
@@ -85,7 +89,11 @@ export default function AppPage() {
 
             {/* Input Form */}
             <div className="animate-slide-up">
-              <TextInputForm onSubmit={handleSubmit} isLoading={state.isGenerating} />
+              <TextInputForm
+                onSubmit={handleSubmit}
+                onFileSubmit={handleFileSubmit}
+                isLoading={state.isGenerating}
+              />
             </div>
 
             {/* Error message */}

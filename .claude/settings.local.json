@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(poetry install:*)",
+      "Bash(python -m poetry:*)",
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "Bash(npm run lint)",
+      "Bash(npx eslint:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

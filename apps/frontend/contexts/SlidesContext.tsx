@@ -110,6 +110,7 @@ interface SlidesContextValue {
   state: SlidesState;
   // Actions
   generateSlides: (text: string, theme?: ThemeName, slideCount?: number, title?: string) => Promise<void>;
+  generateFromFile: (file: File, theme?: ThemeName, slideCount?: number, title?: string) => Promise<void>;
   loadPresentation: (id: number) => Promise<void>;
   clearPresentation: () => void;
   setCurrentSlide: (index: number) => void;
@@ -127,6 +128,20 @@ const SlidesContext = createContext<SlidesContextValue | null>(null);
 export function SlidesProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(slidesReducer, initialState);
 
+  const handleAgentEvent = useCallback((event: AgentEvent) => {
+    dispatch({ type: "ADD_AGENT_EVENT", payload: event });
+
+    // When complete, set the presentation
+    if (event.type === "complete" && event.presentation) {
+      dispatch({ type: "SET_PRESENTATION", payload: event.presentation });
+    }
+
+    // Handle errors
+    if (event.type === "error") {
+      dispatch({ type: "SET_ERROR", payload: event.message || "Generation failed" });
+    }
+  }, []);
+
   const generateSlides = useCallback(
     async (text: string, theme?: ThemeName, slideCount?: number, title?: string) => {
       dispatch({ type: "SET_GENERATING", payload: true });
@@ -137,19 +152,7 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
       try {
         await SlidesRepository.generateStream(
           { text, slide_count: slideCount, title, theme },
-          (event) => {
-            dispatch({ type: "ADD_AGENT_EVENT", payload: event });
-
-            // When complete, set the presentation
-            if (event.type === "complete" && event.presentation) {
-              dispatch({ type: "SET_PRESENTATION", payload: event.presentation });
-            }
-
-            // Handle errors
-            if (event.type === "error") {
-              dispatch({ type: "SET_ERROR", payload: event.message || "Generation failed" });
-            }
-          }
+          handleAgentEvent
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : "Failed to generate slides";
@@ -159,7 +162,31 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "SET_GENERATING", payload: false });
       }
     },
-    []
+    [handleAgentEvent]
+  );
+
+  const generateFromFile = useCallback(
+    async (file: File, theme?: ThemeName, slideCount?: number, title?: string) => {
+      dispatch({ type: "SET_GENERATING", payload: true });
+      dispatch({ type: "SET_ERROR", payload: null });
+      dispatch({ type: "CLEAR_AGENT_EVENTS" });
+      dispatch({ type: "SET_THEME", payload: theme || "neobrutalism" });
+
+      try {
+        await SlidesRepository.generateFromFileStream(
+          file,
+          { slideCount, title, theme },
+          handleAgentEvent
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to generate slides from file";
+        dispatch({ type: "SET_ERROR", payload: message });
+        throw error;
+      } finally {
+        dispatch({ type: "SET_GENERATING", payload: false });
+      }
+    },
+    [handleAgentEvent]
   );
 
   const loadPresentation = useCallback(async (id: number) => {
@@ -227,6 +254,7 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
   const value: SlidesContextValue = {
     state,
     generateSlides,
+    generateFromFile,
     loadPresentation,
     clearPresentation,
     setCurrentSlide,

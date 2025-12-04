@@ -27,6 +27,10 @@ httpx = "^0.28.0"
 openai = "^1.59.5"
 # PDF generation
 weasyprint = "^62.0"
+# File extraction
+pymupdf = "^1.24.0"
+python-docx = "^1.1.0"
+python-multipart = "^0.0.9"
 # Utilities
 python-dotenv = "^1.0.1"
 tenacity = "^9.0.0"
