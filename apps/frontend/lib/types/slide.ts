@@ -114,6 +114,10 @@ export interface Slide {
   chart_type?: ChartType | null;
   chart_data?: ChartDataPoint[] | null;
   chart_config?: ChartConfig | null;
+  // Image fields
+  image_url?: string | null;
+  image_alt?: string | null;
+  image_credit?: string | null;
 }
 
 export interface Presentation {

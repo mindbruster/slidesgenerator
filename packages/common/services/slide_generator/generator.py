@@ -15,6 +15,7 @@ from sqlalchemy.orm import selectinload
 from packages.common.core.logging import get_logger
 from packages.common.models import Presentation, Slide
 from packages.common.providers.llm import OpenRouterProvider
+from packages.common.providers.unsplash import unsplash_provider
 from packages.common.schemas import PresentationResponse
 from packages.common.themes import Theme, get_theme
 
@@ -218,11 +219,21 @@ class SlideGeneratorService:
                 data={"message": f"Planning slide {slide_order + 1}...", "iteration": iteration + 1},
             )
 
-            response = await self.llm.complete_with_tools(
-                messages=messages,
-                tools=SLIDE_TOOLS,
-                temperature=0.7,
-            )
+            try:
+                logger.info(f"Calling LLM API (iteration {iteration + 1})...")
+                response = await self.llm.complete_with_tools(
+                    messages=messages,
+                    tools=SLIDE_TOOLS,
+                    temperature=0.7,
+                )
+                logger.info(f"LLM API call completed (iteration {iteration + 1})")
+            except Exception as e:
+                logger.error(f"LLM API call failed (iteration {iteration + 1}): {e}", exc_info=True)
+                yield AgentEvent(
+                    type="error",
+                    data={"message": f"Failed to generate slide: {str(e)}", "iteration": iteration + 1},
+                )
+                raise
 
             assistant_message = response.choices[0].message
             tool_calls = assistant_message.tool_calls
@@ -289,6 +300,7 @@ class SlideGeneratorService:
                         "chart_type": args.get("chart_type"),
                         "chart_data": args.get("chart_data"),
                         "chart_config": args.get("chart_config"),
+                        "image_query": args.get("image_query"),
                     }
 
                 yield AgentEvent(type="tool_call", data=event_data)
@@ -392,6 +404,23 @@ class SlideGeneratorService:
         order: int,
     ) -> tuple[str, bool]:
         """Add a slide to the presentation."""
+        # Fetch image from Unsplash if image_query is provided
+        image_url = None
+        image_alt = None
+        image_credit = None
+
+        image_query = args.get("image_query")
+        if image_query:
+            try:
+                image_data = await unsplash_provider.search_image(image_query)
+                if image_data:
+                    image_url = image_data["url"]
+                    image_alt = image_data["alt"]
+                    image_credit = f"Photo by {image_data['photographer']} on Unsplash"
+                    logger.debug(f"Fetched image for query '{image_query}': {image_url[:50]}...")
+            except Exception as e:
+                logger.warning(f"Failed to fetch image for query '{image_query}': {e}")
+
         slide = Slide(
             presentation_id=presentation.id,
             type=args.get("slide_type", "content"),
@@ -406,12 +435,16 @@ class SlideGeneratorService:
             chart_type=args.get("chart_type"),
             chart_data=args.get("chart_data"),
             chart_config=args.get("chart_config"),
+            image_url=image_url,
+            image_alt=image_alt,
+            image_credit=image_credit,
         )
         self.db.add(slide)
         await self.db.flush()
 
         logger.debug(f"Added slide {order + 1}: {slide.type} - {slide.title}")
-        return f"Added slide {order + 1}: {slide.type} slide titled '{slide.title}'", False
+        image_info = " (with image)" if image_url else ""
+        return f"Added slide {order + 1}: {slide.type} slide titled '{slide.title}'{image_info}", False
 
     async def _finish_presentation(
         self,

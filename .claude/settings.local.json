@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(poetry --version:*)",
+      "Bash(python -m pip:*)",
+      "Bash(python -m poetry install:*)",
+      "Bash(python -m poetry lock:*)",
+      "Bash(python -m poetry:*)",
+      "Bash(where:*)",
+      "Bash(py -3.12:*)",
+      "Bash(py:*)",
+      "Bash(npm install)",
+      "Bash(docker logs:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker inspect:*)",
+      "Bash(findstr:*)",
+      "Bash(docker stop:*)",
+      "Bash(docker rm:*)",
+      "Bash(docker run:*)",
+      "Bash(timeout:*)",
+      "Bash(ping:*)",
+      "Bash(docker volume:*)",
+      "Bash(tasklist:*)",
+      "Bash(wmic process where \"ProcessId=5080\" get Name,CommandLine)",
+      "Bash(dir:*)",
+      "Bash(set:*)",
+      "Bash(psql:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\13\\bin\\psql.exe\":*)",
+      "Bash(net stop:*)",
+      "Bash(powershell -Command \"$env:DATABASE_URL=''postgresql+asyncpg://decksnap:decksnap@localhost:5433/decksnap''; py -3.12 -m poetry run alembic upgrade head\")",
+      "Bash(powershell -Command:*)",
+      "Bash(env)",
+      "Bash(unset:*)",
+      "Bash(npm run dev:*)",
+      "Bash(docker start:*)",
+      "Bash(grep:*)",
+      "mcp__ide__getDiagnostics"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
