@@ -5,7 +5,9 @@ import { Check, Loader2, Sparkles, Wand2, Brain, ChevronLeft, ChevronRight, Arro
 import { cn } from '@/lib/utils/cn';
 import type { AgentEvent, Slide, ThemeName } from '@/lib/types';
 import { THEMES, THEME_LIST } from '@/lib/themes';
+import { TEMPLATES } from '@/lib/templates';
 import { SlidePreview } from '@/components/organisms/slides/SlidePreview';
+import { MiniSlidePreview } from '@/components/atoms/MiniSlidePreview';
 
 interface AgentProgressProps {
   events: AgentEvent[];
@@ -16,6 +18,8 @@ interface AgentProgressProps {
   onCreateNew?: () => void;
   onUpdateSlide?: (slideNumber: number, args: Record<string, unknown>) => void;
   onRegenerate?: (theme: ThemeName) => void;
+  onSyncEdits?: () => void;
+  onChangeTheme?: (theme: ThemeName) => void;
 }
 
 function getSlideIcon(type: string) {
@@ -64,6 +68,12 @@ function SlideDetailModal({ event, onClose, onUpdate }: SlideDetailModalProps) {
   const [editedArgs, setEditedArgs] = useState<Record<string, unknown>>({ ...args });
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Draggable state
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const modalRef = useRef<HTMLDivElement>(null);
+
   const handleFieldChange = (field: string, value: unknown) => {
     setEditedArgs(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
@@ -79,14 +89,69 @@ function SlideDetailModal({ event, onClose, onUpdate }: SlideDetailModalProps) {
     handleFieldChange('bullets', bullets);
   };
 
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('input') || (e.target as HTMLElement).closest('textarea')) {
+      return; // Don't drag when clicking buttons or inputs
+    }
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    setPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Global mouse events for dragging outside the modal
+  useEffect(() => {
+    if (isDragging) {
+      const handleGlobalMouseMove = (e: MouseEvent) => {
+        setPosition({
+          x: e.clientX - dragStart.x,
+          y: e.clientY - dragStart.y,
+        });
+      };
+      const handleGlobalMouseUp = () => {
+        setIsDragging(false);
+      };
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+      window.addEventListener('mouseup', handleGlobalMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleGlobalMouseMove);
+        window.removeEventListener('mouseup', handleGlobalMouseUp);
+      };
+    }
+  }, [isDragging, dragStart]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-fade-in" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 animate-fade-in"
+      onClick={onClose}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    >
       <div
+        ref={modalRef}
         className="bg-bg-white rounded-2xl border-2 border-border-dark shadow-[6px_6px_0px_0px_#0f0f0f] max-w-lg w-full max-h-[80vh] overflow-hidden"
+        style={{
+          transform: `translate(${position.x}px, ${position.y}px)`,
+          cursor: isDragging ? 'grabbing' : 'default',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b-2 border-border bg-bg-cream">
+        {/* Header - Drag Handle */}
+        <div
+          className="flex items-center justify-between px-6 py-4 border-b-2 border-border bg-bg-cream cursor-grab active:cursor-grabbing select-none"
+          onMouseDown={handleMouseDown}
+        >
           <div className="flex items-center gap-3">
             <span className="text-2xl">{getSlideIcon(slideType)}</span>
             <div>
@@ -307,13 +372,26 @@ function ToolCallItem({ event, isLatest, onClick }: { event: AgentEvent; isLates
   return null;
 }
 
-export function AgentProgress({ events, isComplete, theme = 'neobrutalism', totalSlides, onViewPresentation, onCreateNew, onUpdateSlide, onRegenerate }: AgentProgressProps) {
+export function AgentProgress({ events, isComplete, theme = 'neobrutalism', totalSlides, onViewPresentation, onCreateNew, onUpdateSlide, onRegenerate, onSyncEdits, onChangeTheme }: AgentProgressProps) {
   const themeConfig = THEMES[theme] || THEMES.neobrutalism;
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<AgentEvent | null>(null);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [showChangeTheme, setShowChangeTheme] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<ThemeName>(theme);
   const activityRef = useRef<HTMLDivElement>(null);
+
+  // Handle View Presentation - sync edits first
+  const handleViewPresentation = () => {
+    onSyncEdits?.();
+    onViewPresentation?.();
+  };
+
+  // Handle Change Theme
+  const handleChangeTheme = (newTheme: ThemeName) => {
+    onChangeTheme?.(newTheme);
+    setShowChangeTheme(false);
+  };
 
   // Extract slides from events
   const slides = events
@@ -425,7 +503,7 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
             <div className="flex flex-col gap-2">
               {onViewPresentation && (
                 <button
-                  onClick={onViewPresentation}
+                  onClick={handleViewPresentation}
                   className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-accent-pink text-text-primary font-bold text-sm rounded-lg border-2 border-border-dark shadow-[3px_3px_0px_0px_#0f0f0f] hover:shadow-[1px_1px_0px_0px_#0f0f0f] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   <span>View Presentation</span>
@@ -443,6 +521,74 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
                 </button>
               )}
 
+              {/* Change Theme - Show all templates */}
+              {onChangeTheme && (
+                <div className="space-y-2">
+                  {showChangeTheme ? (
+                    <div className="p-3 bg-bg-white border-2 border-border rounded-lg space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-semibold text-text-primary flex items-center gap-1">
+                          <Palette className="w-3 h-3" />
+                          Select Template Style
+                        </label>
+                        <button
+                          onClick={() => setShowChangeTheme(false)}
+                          className="p-1 hover:bg-bg-cream rounded"
+                        >
+                          <X className="w-3 h-3 text-text-muted" />
+                        </button>
+                      </div>
+                      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-thin scrollbar-thumb-border">
+                        {TEMPLATES.map((template) => (
+                          <button
+                            key={template.id}
+                            onClick={() => handleChangeTheme(template.theme)}
+                            className={cn(
+                              'flex-shrink-0 w-32 rounded-lg border-2 overflow-hidden transition-all',
+                              theme === template.theme
+                                ? 'border-accent-pink shadow-[2px_2px_0px_0px_#ff90e8]'
+                                : 'border-border hover:border-border-dark'
+                            )}
+                          >
+                            <div className="relative">
+                              <MiniSlidePreview
+                                slide={template.slides[0]}
+                                theme={template.theme}
+                                scale={0.12}
+                              />
+                              <div
+                                className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded text-[8px] font-semibold uppercase"
+                                style={{
+                                  backgroundColor: THEMES[template.theme].colors.accent,
+                                  color: THEMES[template.theme].name === 'terminal' || THEMES[template.theme].name === 'dark'
+                                    ? THEMES[template.theme].colors.background
+                                    : '#fff',
+                                }}
+                              >
+                                {THEMES[template.theme].display_name}
+                              </div>
+                            </div>
+                            <div className="p-1.5 bg-bg-cream">
+                              <p className="text-[10px] font-medium text-text-primary truncate">
+                                {template.title}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowChangeTheme(true)}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-bg-white text-text-primary font-medium text-sm rounded-lg border-2 border-border hover:border-border-dark hover:bg-bg-cream transition-all"
+                    >
+                      <Palette className="w-4 h-4" />
+                      <span>Change Theme</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Regenerate with Theme Selection */}
               {onRegenerate && (
                 <div className="space-y-2">
@@ -450,8 +596,8 @@ export function AgentProgress({ events, isComplete, theme = 'neobrutalism', tota
                     <div className="p-3 bg-bg-white border-2 border-border rounded-lg space-y-2">
                       <div className="flex items-center justify-between">
                         <label className="text-xs font-semibold text-text-primary flex items-center gap-1">
-                          <Palette className="w-3 h-3" />
-                          Select Theme
+                          <RefreshCw className="w-3 h-3" />
+                          Regenerate with Theme
                         </label>
                         <button
                           onClick={() => setShowThemeSelector(false)}

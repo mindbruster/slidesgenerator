@@ -11,7 +11,7 @@ import type { Template } from "@/lib/templates";
 
 export default function AppPage() {
   const router = useRouter();
-  const { state, generateSlides, generateFromFile, startNewPresentation, updateAgentEventSlide } = useSlides();
+  const { state, generateSlides, generateFromFile, startNewPresentation, updateAgentEventSlide, syncAgentEditsToPresentation, changeTheme } = useSlides();
   const [lastInputText, setLastInputText] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
 
@@ -101,6 +101,8 @@ export default function AppPage() {
                 onCreateNew={startNewPresentation}
                 onUpdateSlide={updateAgentEventSlide}
                 onRegenerate={handleRegenerate}
+                onSyncEdits={syncAgentEditsToPresentation}
+                onChangeTheme={changeTheme}
               />
             </div>
           ) : (

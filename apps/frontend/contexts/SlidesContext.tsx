@@ -46,7 +46,9 @@ type SlidesAction =
   | { type: "CLEAR_AGENT_EVENTS" }
   | { type: "UPDATE_AGENT_EVENT"; payload: { slideNumber: number; args: Record<string, unknown> } }
   | { type: "SET_THEME"; payload: ThemeName }
-  | { type: "SET_REQUESTED_SLIDE_COUNT"; payload: number | null };
+  | { type: "SET_REQUESTED_SLIDE_COUNT"; payload: number | null }
+  | { type: "SYNC_AGENT_EDITS_TO_PRESENTATION"; payload: AgentEvent[] }
+  | { type: "CHANGE_PRESENTATION_THEME"; payload: ThemeName };
 
 // Reducer
 function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
@@ -129,6 +131,38 @@ function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
     case "SET_REQUESTED_SLIDE_COUNT":
       return { ...state, requestedSlideCount: action.payload };
 
+    case "SYNC_AGENT_EDITS_TO_PRESENTATION":
+      if (!state.presentation) return state;
+      // Build updated slides from agent events
+      const slideEvents = action.payload.filter(
+        (e) => e.type === "tool_call" && e.tool === "add_slide" && e.slide
+      );
+      const updatedSlides = state.presentation.slides.map((slide, index) => {
+        const matchingEvent = slideEvents.find((e) => e.slide_number === index + 1);
+        if (matchingEvent && matchingEvent.slide) {
+          return { ...slide, ...matchingEvent.slide };
+        }
+        return slide;
+      });
+      return {
+        ...state,
+        presentation: {
+          ...state.presentation,
+          slides: updatedSlides,
+        },
+      };
+
+    case "CHANGE_PRESENTATION_THEME":
+      if (!state.presentation) return state;
+      return {
+        ...state,
+        presentation: {
+          ...state.presentation,
+          theme: action.payload,
+        },
+        currentTheme: action.payload,
+      };
+
     default:
       return state;
   }
@@ -147,6 +181,8 @@ interface SlidesContextValue {
   setCurrentSlide: (index: number) => void;
   updateSlide: (index: number, data: SlideUpdate) => Promise<void>;
   updateAgentEventSlide: (slideNumber: number, args: Record<string, unknown>) => void;
+  syncAgentEditsToPresentation: () => void;
+  changeTheme: (theme: ThemeName) => void;
   nextSlide: () => void;
   previousSlide: () => void;
   // Computed
@@ -313,6 +349,14 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "UPDATE_AGENT_EVENT", payload: { slideNumber, args } });
   }, []);
 
+  const syncAgentEditsToPresentation = useCallback(() => {
+    dispatch({ type: "SYNC_AGENT_EDITS_TO_PRESENTATION", payload: state.agentEvents });
+  }, [state.agentEvents]);
+
+  const changeTheme = useCallback((theme: ThemeName) => {
+    dispatch({ type: "CHANGE_PRESENTATION_THEME", payload: theme });
+  }, []);
+
   // Computed values
   const currentSlide = state.presentation?.slides[state.currentSlideIndex] ?? null;
   const totalSlides = state.presentation?.slides.length ?? 0;
@@ -328,6 +372,8 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     setCurrentSlide,
     updateSlide,
     updateAgentEventSlide,
+    syncAgentEditsToPresentation,
+    changeTheme,
     nextSlide,
     previousSlide,
     currentSlide,
