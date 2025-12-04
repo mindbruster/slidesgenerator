@@ -127,14 +127,17 @@ SLIDE TYPES:
 - "section": Section divider for topic transitions
 - "chart": Data visualization (bar, line, pie, donut, area, horizontal_bar)
 
-CHART GUIDELINES:
-- Use charts PROACTIVELY to visualize data, statistics, comparisons, and trends
-- Even when exact numbers aren't provided, create illustrative charts with reasonable estimates
-- For comparisons: use bar or horizontal_bar charts
-- For trends over time: use line or area charts
-- For proportions/distributions: use pie or donut charts
-- Provide 3-8 data points with clear labels and realistic values
-- Always include a descriptive title for chart slides
+METRICS & CHART GUIDELINES (VERY IMPORTANT):
+- ALWAYS include at least 2-3 chart slides per presentation to visualize key metrics
+- Create charts for ANY quantifiable concept, even if exact numbers aren't provided - use realistic estimates
+- Metrics to visualize include: market size, growth rates, ROI, efficiency gains, cost savings, user adoption, satisfaction scores, performance improvements, feature comparisons, time savings, etc.
+- Chart type selection:
+  * bar/horizontal_bar: Compare items, show rankings, feature comparisons
+  * line/area: Show trends over time, growth projections, progress tracking
+  * pie/donut: Show distributions, market share, budget allocation, composition
+- Always use 4-6 data points with clear labels and realistic values
+- Make charts relevant to the content - if discussing benefits, show quantified impact
+- Example metrics to create: "Expected ROI by Quarter", "Feature Comparison", "Market Growth Trend", "Customer Satisfaction", "Time Savings Analysis", "Cost Reduction Impact"
 
 IMAGE GUIDELINES:
 - Add image_query to content, bullets, and section slides to include relevant stock photos
@@ -142,13 +145,23 @@ IMAGE GUIDELINES:
 - Images make presentations more engaging and professional
 - Don't add images to title, quote, or chart slides
 
+PRESENTATION STRUCTURE:
+1. Title slide (type: title)
+2. Overview/Introduction (content or bullets with image)
+3. Key Features/Benefits with supporting chart
+4. Section divider if needed
+5. More content with metrics visualization
+6. Comparison or trend chart
+7. Additional details with images
+8. Summary/Conclusion or impactful quote
+
 RULES:
 1. First slide MUST be type "title"
 2. Create exactly {slide_count} slides total
-3. Use varied slide types for visual interest
-4. ACTIVELY LOOK FOR opportunities to use chart slides - statistics, comparisons, growth, distributions, percentages
+3. MUST include at least 2-3 chart slides with relevant metrics
+4. Use varied slide types for visual interest (mix of content, bullets, charts, quotes)
 5. ADD image_query to most content and bullets slides for visual appeal
 6. Keep text content concise and impactful
 7. After creating all slides, call finish_presentation with the presentation title
 
-Create slides now based on the user's text."""
+Create slides now based on the user's text. Remember: Data-driven presentations with charts are more persuasive!"""

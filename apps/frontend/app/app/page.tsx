@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { TextInputForm } from "@/components/molecules";
 import { AgentProgress } from "@/components/organisms/agent";
@@ -12,7 +12,8 @@ import type { Template } from "@/lib/templates";
 
 export default function AppPage() {
   const router = useRouter();
-  const { state, generateSlides } = useSlides();
+  const { state, generateSlides, startNewPresentation, updateAgentEventSlide } = useSlides();
+  const [lastInputText, setLastInputText] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [isGalleryCollapsed, setIsGalleryCollapsed] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
@@ -20,19 +21,45 @@ export default function AppPage() {
   const isComplete = state.agentEvents.some((e) => e.type === "complete");
   const isGenerating = state.isGenerating || state.agentEvents.length > 0;
 
-  // Navigate to presentation when generation completes
-  useEffect(() => {
-    if (isComplete && state.presentation) {
-      const timer = setTimeout(() => {
-        router.push("/presentation");
-      }, 1500);
-      return () => clearTimeout(timer);
+  const handleViewPresentation = () => {
+    if (state.presentation) {
+      router.push("/presentation");
     }
-  }, [isComplete, state.presentation, router]);
+  };
 
   const handleSubmit = async (text: string, theme: ThemeName, slideCount: number) => {
+    setLastInputText(text);
     await generateSlides(text, theme, slideCount);
   };
+
+  const handleRegenerate = useCallback(async (theme: ThemeName) => {
+    // Build content from the current agent events (which may have been edited)
+    const slideEvents = state.agentEvents.filter(
+      (e) => e.type === "tool_call" && e.tool === "add_slide"
+    );
+
+    // Create a text summary from the edited slide content
+    const editedContent = slideEvents
+      .map((event) => {
+        const args = event.args || {};
+        let content = args.title ? `${args.title}` : "";
+        if (args.subtitle) content += `\n${args.subtitle}`;
+        if (args.body) content += `\n${args.body}`;
+        if (args.bullets && Array.isArray(args.bullets)) {
+          content += `\n${(args.bullets as string[]).join("\n")}`;
+        }
+        if (args.quote) content += `\n"${args.quote}"`;
+        if (args.attribution) content += ` - ${args.attribution}`;
+        return content;
+      })
+      .filter(Boolean)
+      .join("\n\n");
+
+    // Use the edited content or fall back to the original input
+    const textToUse = editedContent || lastInputText;
+
+    await generateSlides(textToUse, theme, state.requestedSlideCount || slideEvents.length);
+  }, [state.agentEvents, state.requestedSlideCount, lastInputText, generateSlides]);
 
   const handleSelectTemplate = (template: Template) => {
     setSelectedTemplate(template);
@@ -61,7 +88,16 @@ export default function AppPage() {
         {isGenerating ? (
           /* Generation Progress - Full width layout */
           <div className="relative px-4 py-8 animate-fade-in">
-            <AgentProgress events={state.agentEvents} isComplete={isComplete} theme={state.currentTheme} />
+            <AgentProgress
+              events={state.agentEvents}
+              isComplete={isComplete}
+              theme={state.currentTheme}
+              totalSlides={state.requestedSlideCount || undefined}
+              onViewPresentation={handleViewPresentation}
+              onCreateNew={startNewPresentation}
+              onUpdateSlide={updateAgentEventSlide}
+              onRegenerate={handleRegenerate}
+            />
           </div>
         ) : (
           <div className="relative">

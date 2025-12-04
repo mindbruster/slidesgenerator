@@ -15,6 +15,8 @@ import {
   FileSpreadsheet,
   Share2,
   Layers,
+  Wand2,
+  Plus,
 } from "lucide-react";
 
 export default function PresentationPage() {
@@ -103,9 +105,11 @@ export default function PresentationPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 bg-bg-white border-b-2 border-border-dark">
         <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
+          {/* Back to AI Agent page (preserves state) */}
+          <Link href="/app">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Wand2 className="w-4 h-4" />
+              <span className="hidden md:inline">AI Agent</span>
             </Button>
           </Link>
           <div className="flex items-center gap-2">

@@ -19,6 +19,7 @@ interface SlidesState {
   error: string | null;
   agentEvents: AgentEvent[];
   currentTheme: ThemeName;
+  requestedSlideCount: number | null;
 }
 
 const initialState: SlidesState = {
@@ -29,6 +30,7 @@ const initialState: SlidesState = {
   error: null,
   agentEvents: [],
   currentTheme: "neobrutalism",
+  requestedSlideCount: null,
 };
 
 // Actions
@@ -42,7 +44,9 @@ type SlidesAction =
   | { type: "SET_ERROR"; payload: string | null }
   | { type: "ADD_AGENT_EVENT"; payload: AgentEvent }
   | { type: "CLEAR_AGENT_EVENTS" }
-  | { type: "SET_THEME"; payload: ThemeName };
+  | { type: "UPDATE_AGENT_EVENT"; payload: { slideNumber: number; args: Record<string, unknown> } }
+  | { type: "SET_THEME"; payload: ThemeName }
+  | { type: "SET_REQUESTED_SLIDE_COUNT"; payload: number | null };
 
 // Reducer
 function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
@@ -97,8 +101,33 @@ function slidesReducer(state: SlidesState, action: SlidesAction): SlidesState {
     case "CLEAR_AGENT_EVENTS":
       return { ...state, agentEvents: [] };
 
+    case "UPDATE_AGENT_EVENT":
+      return {
+        ...state,
+        agentEvents: state.agentEvents.map((event) => {
+          if (event.type === "tool_call" && event.tool === "add_slide" && event.slide_number === action.payload.slideNumber) {
+            // Update the args and also update the slide object
+            const newArgs = { ...event.args, ...action.payload.args };
+            const updatedSlide = event.slide ? {
+              ...event.slide,
+              title: newArgs.title as string || event.slide.title,
+              subtitle: newArgs.subtitle as string || event.slide.subtitle,
+              body: newArgs.body as string || event.slide.body,
+              bullets: newArgs.bullets as string[] || event.slide.bullets,
+              quote: newArgs.quote as string || event.slide.quote,
+              attribution: newArgs.attribution as string || event.slide.attribution,
+            } : event.slide;
+            return { ...event, args: newArgs, slide: updatedSlide };
+          }
+          return event;
+        }),
+      };
+
     case "SET_THEME":
       return { ...state, currentTheme: action.payload };
+
+    case "SET_REQUESTED_SLIDE_COUNT":
+      return { ...state, requestedSlideCount: action.payload };
 
     default:
       return state;
@@ -112,8 +141,10 @@ interface SlidesContextValue {
   generateSlides: (text: string, theme?: ThemeName, slideCount?: number, title?: string) => Promise<void>;
   loadPresentation: (id: number) => Promise<void>;
   clearPresentation: () => void;
+  startNewPresentation: () => void;
   setCurrentSlide: (index: number) => void;
   updateSlide: (index: number, data: SlideUpdate) => Promise<void>;
+  updateAgentEventSlide: (slideNumber: number, args: Record<string, unknown>) => void;
   nextSlide: () => void;
   previousSlide: () => void;
   // Computed
@@ -133,6 +164,7 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "SET_ERROR", payload: null });
       dispatch({ type: "CLEAR_AGENT_EVENTS" });
       dispatch({ type: "SET_THEME", payload: theme || "neobrutalism" });
+      dispatch({ type: "SET_REQUESTED_SLIDE_COUNT", payload: slideCount || null });
 
       try {
         await SlidesRepository.generateStream(
@@ -180,6 +212,12 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLEAR_PRESENTATION" });
   }, []);
 
+  const startNewPresentation = useCallback(() => {
+    dispatch({ type: "CLEAR_PRESENTATION" });
+    dispatch({ type: "CLEAR_AGENT_EVENTS" });
+    dispatch({ type: "SET_ERROR", payload: null });
+  }, []);
+
   const setCurrentSlide = useCallback((index: number) => {
     dispatch({ type: "SET_CURRENT_SLIDE", payload: index });
   }, []);
@@ -220,6 +258,10 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "SET_CURRENT_SLIDE", payload: prev });
   }, [state.currentSlideIndex]);
 
+  const updateAgentEventSlide = useCallback((slideNumber: number, args: Record<string, unknown>) => {
+    dispatch({ type: "UPDATE_AGENT_EVENT", payload: { slideNumber, args } });
+  }, []);
+
   // Computed values
   const currentSlide = state.presentation?.slides[state.currentSlideIndex] ?? null;
   const totalSlides = state.presentation?.slides.length ?? 0;
@@ -229,8 +271,10 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     generateSlides,
     loadPresentation,
     clearPresentation,
+    startNewPresentation,
     setCurrentSlide,
     updateSlide,
+    updateAgentEventSlide,
     nextSlide,
     previousSlide,
     currentSlide,
