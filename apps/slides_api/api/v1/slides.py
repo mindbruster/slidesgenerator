@@ -5,7 +5,7 @@ Slide generation endpoints
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 
-from packages.common.core.database import AsyncSessionDep
+from packages.common.core.database import AsyncSessionDep, async_session_factory
 from packages.common.schemas import GenerateSlidesRequest, GenerateSlidesResponse
 from packages.common.services.file_extractor import file_extractor
 from packages.common.services.slide_generator import SlideGeneratorService
@@ -40,7 +40,6 @@ async def generate_slides(
 @router.post("/generate/stream")
 async def generate_slides_stream(
     request: GenerateSlidesRequest,
-    db: AsyncSessionDep,
 ) -> StreamingResponse:
     """
     Generate slides with real-time SSE streaming.
@@ -51,20 +50,25 @@ async def generate_slides_stream(
     - tool_result: Tool execution completed
     - complete: Generation finished with final presentation
     - error: An error occurred
+
+    Note: Uses own session factory to manage DB lifecycle within the streaming context.
     """
-    generator = SlideGeneratorService(db)
 
     async def event_stream():
-        try:
-            async for event in generator.generate_stream(
-                text=request.text,
-                slide_count=request.slide_count or 8,
-                title=request.title,
-                theme=request.theme,
-            ):
-                yield event.to_sse()
-        except Exception as e:
-            yield f'data: {{"type": "error", "message": "{str(e)}"}}\n\n'
+        # Create session inside the generator to ensure proper lifecycle
+        async with async_session_factory() as db:
+            try:
+                generator = SlideGeneratorService(db)
+                async for event in generator.generate_stream(
+                    text=request.text,
+                    slide_count=request.slide_count or 8,
+                    title=request.title,
+                    theme=request.theme,
+                ):
+                    yield event.to_sse()
+            except Exception as e:
+                await db.rollback()
+                yield f'data: {{"type": "error", "message": "{str(e)}"}}\n\n'
 
     return StreamingResponse(
         event_stream(),
@@ -108,7 +112,6 @@ async def generate_slides_from_file(
 
 @router.post("/generate/upload/stream")
 async def generate_slides_from_file_stream(
-    db: AsyncSessionDep,
     file: UploadFile = File(..., description="File to extract text from (PDF, DOCX, TXT, MD)"),
     slide_count: int = Form(default=8, ge=5, le=15, description="Target number of slides"),
     title: str | None = Form(default=None, max_length=255, description="Optional presentation title"),
@@ -118,23 +121,27 @@ async def generate_slides_from_file_stream(
     Generate slides from an uploaded file with real-time SSE streaming.
 
     Supports: PDF, DOCX, TXT, MD files (max 10MB).
+
+    Note: Uses own session factory to manage DB lifecycle within the streaming context.
     """
-    # Extract text from file first
+    # Extract text from file first (before streaming starts)
     text = await file_extractor.extract(file)
 
-    generator = SlideGeneratorService(db)
-
     async def event_stream():
-        try:
-            async for event in generator.generate_stream(
-                text=text,
-                slide_count=slide_count,
-                title=title,
-                theme=theme,
-            ):
-                yield event.to_sse()
-        except Exception as e:
-            yield f'data: {{"type": "error", "message": "{str(e)}"}}\n\n'
+        # Create session inside the generator to ensure proper lifecycle
+        async with async_session_factory() as db:
+            try:
+                generator = SlideGeneratorService(db)
+                async for event in generator.generate_stream(
+                    text=text,
+                    slide_count=slide_count,
+                    title=title,
+                    theme=theme,
+                ):
+                    yield event.to_sse()
+            except Exception as e:
+                await db.rollback()
+                yield f'data: {{"type": "error", "message": "{str(e)}"}}\n\n'
 
     return StreamingResponse(
         event_stream(),

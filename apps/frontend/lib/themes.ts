@@ -58,6 +58,7 @@ export const THEMES: Record<ThemeName, ThemeDefinition> = {
       accent_bar_width: '4px',
       background_pattern: 'none',
       pattern_opacity: 0.05,
+      background_gradient: null,
     },
     spacing: {
       slide_padding: '80px',
@@ -123,6 +124,7 @@ export const THEMES: Record<ThemeName, ThemeDefinition> = {
       accent_bar_width: '3px',
       background_pattern: 'none',
       pattern_opacity: 0.05,
+      background_gradient: 'linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)',
     },
     spacing: {
       slide_padding: '96px',
@@ -188,6 +190,7 @@ export const THEMES: Record<ThemeName, ThemeDefinition> = {
       accent_bar_width: '4px',
       background_pattern: 'none',
       pattern_opacity: 0.05,
+      background_gradient: null,
     },
     spacing: {
       slide_padding: '100px',
@@ -253,6 +256,7 @@ export const THEMES: Record<ThemeName, ThemeDefinition> = {
       accent_bar_width: '2px',
       background_pattern: 'none',
       pattern_opacity: 0.05,
+      background_gradient: 'linear-gradient(145deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%)',
     },
     spacing: {
       slide_padding: '80px',
@@ -321,6 +325,7 @@ export const THEMES: Record<ThemeName, ThemeDefinition> = {
       accent_bar_width: '3px',
       background_pattern: 'none',
       pattern_opacity: 0.05,
+      background_gradient: 'linear-gradient(180deg, #faf9f7 0%, #f5f0eb 100%)',
     },
     spacing: {
       slide_padding: '100px',
@@ -386,6 +391,7 @@ export const THEMES: Record<ThemeName, ThemeDefinition> = {
       accent_bar_width: '2px',
       background_pattern: 'scanlines',
       pattern_opacity: 0.03,
+      background_gradient: 'radial-gradient(ellipse at bottom right, #001a00 0%, #0a0a0a 70%)',
     },
     spacing: {
       slide_padding: '60px',
@@ -451,6 +457,7 @@ export const THEMES: Record<ThemeName, ThemeDefinition> = {
       accent_bar_width: '4px',
       background_pattern: 'dots',
       pattern_opacity: 0.08,
+      background_gradient: 'linear-gradient(135deg, #fff5eb 0%, #ffe0f3 50%, #e0f0ff 100%)',
     },
     spacing: {
       slide_padding: '72px',

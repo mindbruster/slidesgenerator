@@ -107,6 +107,9 @@ class ThemeStyle:
     background_pattern: Literal["none", "dots", "grid", "scanlines", "noise"] = "none"
     pattern_opacity: float = 0.05
 
+    # Gradient background (CSS gradient value or null)
+    background_gradient: str | None = None
+
 
 # =============================================================================
 # SPACING DEFINITIONS
@@ -265,6 +268,7 @@ THEMES: dict[str, Theme] = {
             shadow="0 4px 6px -1px rgba(0,0,0,0.1)",
             accent_bar_position="left",
             accent_bar_width="3px",
+            background_gradient="linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)",
         ),
         spacing=ThemeSpacing(
             slide_padding="96px",
@@ -373,6 +377,7 @@ THEMES: dict[str, Theme] = {
             shadow="0 0 20px 0 rgba(167,139,250,0.15)",
             accent_bar_position="top",
             accent_bar_width="2px",
+            background_gradient="linear-gradient(145deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%)",
         ),
         spacing=ThemeSpacing(
             slide_padding="80px",
@@ -434,6 +439,7 @@ THEMES: dict[str, Theme] = {
             shadow=None,
             accent_bar_position="left",
             accent_bar_width="3px",
+            background_gradient="linear-gradient(180deg, #faf9f7 0%, #f5f0eb 100%)",
         ),
         spacing=ThemeSpacing(
             slide_padding="100px",
@@ -494,6 +500,7 @@ THEMES: dict[str, Theme] = {
             accent_bar_width="2px",
             background_pattern="scanlines",
             pattern_opacity=0.03,
+            background_gradient="radial-gradient(ellipse at bottom right, #001a00 0%, #0a0a0a 70%)",
         ),
         spacing=ThemeSpacing(
             slide_padding="60px",
@@ -551,6 +558,7 @@ THEMES: dict[str, Theme] = {
             accent_bar_position="none",
             background_pattern="dots",
             pattern_opacity=0.08,
+            background_gradient="linear-gradient(135deg, #fff5eb 0%, #ffe0f3 50%, #e0f0ff 100%)",
         ),
         spacing=ThemeSpacing(
             slide_padding="72px",
@@ -628,6 +636,7 @@ def theme_to_dict(theme: Theme) -> dict:
             "accent_bar_width": theme.style.accent_bar_width,
             "background_pattern": theme.style.background_pattern,
             "pattern_opacity": theme.style.pattern_opacity,
+            "background_gradient": theme.style.background_gradient,
         },
         "spacing": {
             "slide_padding": theme.spacing.slide_padding,

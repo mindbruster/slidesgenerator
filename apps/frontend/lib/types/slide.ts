@@ -3,7 +3,9 @@
  * Mirrors backend Pydantic schemas
  */
 
-export type SlideType = "title" | "content" | "bullets" | "quote" | "section" | "chart";
+export type SlideType =
+  | "title" | "content" | "bullets" | "quote" | "section" | "chart"
+  | "stats" | "big_number" | "comparison" | "timeline";
 export type SlideLayout = "left" | "center" | "right" | "split";
 export type ChartType = "bar" | "line" | "pie" | "donut" | "area" | "horizontal_bar";
 export type ThemeName = "neobrutalism" | "corporate" | "minimal" | "dark" | "magazine" | "terminal" | "playful";
@@ -52,6 +54,8 @@ export interface ThemeStyle {
   accent_bar_width: string;
   background_pattern: "none" | "dots" | "grid" | "scanlines" | "noise";
   pattern_opacity: number;
+  // Gradient backgrounds
+  background_gradient?: string | null;
 }
 
 export interface ThemeSpacing {
@@ -99,6 +103,25 @@ export interface ChartConfig {
   x_axis_label?: string;
 }
 
+// New slide type interfaces
+export interface StatItem {
+  value: string;
+  label: string;
+  description?: string;
+}
+
+export interface ComparisonColumn {
+  title: string;
+  items: string[];
+  highlight?: boolean;
+}
+
+export interface TimelineItem {
+  title: string;
+  description?: string;
+  date?: string;
+}
+
 export interface Slide {
   id: number;
   type: SlideType;
@@ -118,6 +141,16 @@ export interface Slide {
   image_url?: string | null;
   image_alt?: string | null;
   image_credit?: string | null;
+  // Stats fields
+  stats?: StatItem[] | null;
+  // Big number fields
+  big_number_value?: string | null;
+  big_number_label?: string | null;
+  big_number_context?: string | null;
+  // Comparison fields
+  comparison_columns?: ComparisonColumn[] | null;
+  // Timeline fields
+  timeline_items?: TimelineItem[] | null;
 }
 
 export interface Presentation {

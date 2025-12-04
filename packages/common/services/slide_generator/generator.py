@@ -421,23 +421,38 @@ class SlideGeneratorService:
             except Exception as e:
                 logger.warning(f"Failed to fetch image for query '{image_query}': {e}")
 
+        # Helper to ensure JSON fields get None instead of empty/null values
+        # Also handles cases where LLM passes the literal string "null"
+        def get_json_field(key: str) -> Any:
+            val = args.get(key)
+            if val is None or val == "null" or val == "" or val == []:
+                return None
+            return val
+
         slide = Slide(
             presentation_id=presentation.id,
             type=args.get("slide_type", "content"),
             title=args.get("title"),
             subtitle=args.get("subtitle"),
             body=args.get("body"),
-            bullets=args.get("bullets"),
+            bullets=get_json_field("bullets"),
             quote=args.get("quote"),
             attribution=args.get("attribution"),
             layout=args.get("layout", "center"),
             order=order,
             chart_type=args.get("chart_type"),
-            chart_data=args.get("chart_data"),
-            chart_config=args.get("chart_config"),
+            chart_data=get_json_field("chart_data"),
+            chart_config=get_json_field("chart_config"),
             image_url=image_url,
             image_alt=image_alt,
             image_credit=image_credit,
+            # New slide type fields
+            stats=get_json_field("stats"),
+            big_number_value=args.get("big_number_value"),
+            big_number_label=args.get("big_number_label"),
+            big_number_context=args.get("big_number_context"),
+            comparison_columns=get_json_field("comparison_columns"),
+            timeline_items=get_json_field("timeline_items"),
         )
         self.db.add(slide)
         await self.db.flush()

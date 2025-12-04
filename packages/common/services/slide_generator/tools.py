@@ -27,8 +27,21 @@ SLIDE_TOOLS = [
                 "properties": {
                     "slide_type": {
                         "type": "string",
-                        "enum": ["title", "content", "bullets", "quote", "section", "chart"],
-                        "description": "Type of slide: title (opening), content (paragraph), bullets (list), quote, section (divider), chart (data visualization)",
+                        "enum": [
+                            "title", "content", "bullets", "quote", "section", "chart",
+                            "stats", "big_number", "comparison", "timeline"
+                        ],
+                        "description": """Type of slide:
+- title: Opening slide with main title and subtitle
+- content: Text-heavy slide with title and body paragraph
+- bullets: List of key points (3-6 bullets)
+- quote: Impactful quote with attribution
+- section: Section divider for topic transitions
+- chart: Data visualization (bar, line, pie, etc.)
+- stats: Multiple key metrics displayed in a grid (2-4 stats) - GREAT for showcasing KPIs
+- big_number: Single hero metric for maximum impact - use for your most impressive stat
+- comparison: Side-by-side comparison (before/after, us/them) - perfect for showing transformation
+- timeline: Process steps or milestones in sequence - great for roadmaps""",
                     },
                     "title": {
                         "type": "string",
@@ -60,6 +73,7 @@ SLIDE_TOOLS = [
                         "enum": ["left", "center", "right"],
                         "description": "Text alignment (default: center)",
                     },
+                    # Chart fields
                     "chart_type": {
                         "type": "string",
                         "enum": ["bar", "line", "pie", "donut", "area", "horizontal_bar"],
@@ -76,7 +90,7 @@ SLIDE_TOOLS = [
                             },
                             "required": ["label", "value"],
                         },
-                        "description": "Data points for the chart (3-8 items recommended, required for chart slides)",
+                        "description": "Data points for the chart (3-8 items, required for chart slides)",
                     },
                     "chart_config": {
                         "type": "object",
@@ -90,7 +104,66 @@ SLIDE_TOOLS = [
                     },
                     "image_query": {
                         "type": "string",
-                        "description": "Search keywords to find a relevant stock image for this slide. Use descriptive terms like 'business meeting', 'technology', 'teamwork'. Recommended for content and bullets slides.",
+                        "description": "Search keywords to find a relevant stock image. Use for content/bullets slides.",
+                    },
+                    # Stats fields
+                    "stats": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "value": {"type": "string", "description": "The metric (e.g., '50%', '10x', '$1M')"},
+                                "label": {"type": "string", "description": "What the metric measures"},
+                                "description": {"type": "string", "description": "Optional context"},
+                            },
+                            "required": ["value", "label"],
+                        },
+                        "description": "2-4 key statistics for stats slides",
+                    },
+                    # Big number fields
+                    "big_number_value": {
+                        "type": "string",
+                        "description": "The hero metric value (e.g., '10x', '99.9%', '$5M')",
+                    },
+                    "big_number_label": {
+                        "type": "string",
+                        "description": "Label explaining the metric",
+                    },
+                    "big_number_context": {
+                        "type": "string",
+                        "description": "Additional context or explanation",
+                    },
+                    # Comparison fields
+                    "comparison_columns": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "title": {"type": "string", "description": "Column header (e.g., 'Before', 'After')"},
+                                "items": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "List of comparison points",
+                                },
+                                "highlight": {"type": "boolean", "description": "Highlight this column"},
+                            },
+                            "required": ["title", "items"],
+                        },
+                        "description": "Exactly 2 columns for comparison slides",
+                    },
+                    # Timeline fields
+                    "timeline_items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "title": {"type": "string", "description": "Step or milestone title"},
+                                "description": {"type": "string", "description": "Brief description"},
+                                "date": {"type": "string", "description": "Optional date or phase"},
+                            },
+                            "required": ["title"],
+                        },
+                        "description": "3-6 timeline steps for timeline slides",
                     },
                 },
                 "required": ["slide_type", "title"],
@@ -126,6 +199,10 @@ SLIDE TYPES:
 - "quote": Impactful quote with attribution
 - "section": Section divider for topic transitions
 - "chart": Data visualization (bar, line, pie, donut, area, horizontal_bar)
+- "stats": Multiple metrics in a grid - PERFECT for KPIs and results (2-4 stats)
+- "big_number": Single hero stat that fills the slide - use for your MOST impressive metric
+- "comparison": Before/after or us/them side-by-side - great for showing transformation
+- "timeline": Sequential steps or milestones - ideal for processes and roadmaps
 
 METRICS & CHART GUIDELINES (VERY IMPORTANT):
 - ALWAYS include at least 2-3 chart slides per presentation to visualize key metrics
@@ -138,12 +215,23 @@ METRICS & CHART GUIDELINES (VERY IMPORTANT):
 - Always use 4-6 data points with clear labels and realistic values
 - Make charts relevant to the content - if discussing benefits, show quantified impact
 - Example metrics to create: "Expected ROI by Quarter", "Feature Comparison", "Market Growth Trend", "Customer Satisfaction", "Time Savings Analysis", "Cost Reduction Impact"
+CHART GUIDELINES:
+- Use charts PROACTIVELY to visualize data, statistics, comparisons, and trends
+- Even when exact numbers aren't provided, create illustrative charts with reasonable estimates
+- For comparisons: use bar or horizontal_bar charts
+- For trends over time: use line or area charts
+- For proportions/distributions: use pie or donut charts
+- Provide 3-8 data points with clear labels and realistic values
+
+NEW SLIDE TYPE GUIDELINES:
+- stats: Use when you have 2-4 impressive metrics to show (e.g., "50% cost reduction, 10x speed, 99.9% uptime")
+- big_number: Use for ONE standout metric that deserves its own slide (e.g., "10x ROI")
+- comparison: Use to show transformation or differentiation (Before vs After, Us vs Competitors)
+- timeline: Use for processes, roadmaps, or step-by-step guides (3-6 steps)
 
 IMAGE GUIDELINES:
-- Add image_query to content, bullets, and section slides to include relevant stock photos
-- Use descriptive, specific keywords (e.g., "business team collaboration", "modern office workspace", "data analytics dashboard")
-- Images make presentations more engaging and professional
-- Don't add images to title, quote, or chart slides
+- Add image_query to content, bullets, and section slides for visual appeal
+- Use descriptive keywords (e.g., "business team collaboration", "data analytics dashboard")
 
 PRESENTATION STRUCTURE:
 1. Title slide (type: title)
@@ -163,5 +251,9 @@ RULES:
 5. ADD image_query to most content and bullets slides for visual appeal
 6. Keep text content concise and impactful
 7. After creating all slides, call finish_presentation with the presentation title
+3. Use varied slide types for visual interest - MIX traditional and new types
+4. PROACTIVELY use stats, big_number, comparison, and timeline slides when content fits
+5. Keep text content concise and impactful
+6. After creating all slides, call finish_presentation with the presentation title
 
 Create slides now based on the user's text. Remember: Data-driven presentations with charts are more persuasive!"""

@@ -17,7 +17,6 @@ export default function AppPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [isGalleryCollapsed, setIsGalleryCollapsed] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
-  const { state, generateSlides, generateFromFile } = useSlides();
 
   const isComplete = state.agentEvents.some((e) => e.type === "complete");
   const isGenerating = state.isGenerating || state.agentEvents.length > 0;
@@ -151,12 +150,6 @@ export default function AppPage() {
                 onSelectTemplate={handleSelectTemplate}
                 isCollapsed={isGalleryCollapsed}
                 onToggleCollapse={() => setIsGalleryCollapsed(!isGalleryCollapsed)}
-            {/* Input Form */}
-            <div className="animate-slide-up">
-              <TextInputForm
-                onSubmit={handleSubmit}
-                onFileSubmit={handleFileSubmit}
-                isLoading={state.isGenerating}
               />
             </div>
 
@@ -176,6 +169,7 @@ export default function AppPage() {
               <div className="animate-slide-up">
                 <TextInputForm
                   onSubmit={handleSubmit}
+                  onFileSubmit={handleFileSubmit}
                   isLoading={state.isGenerating}
                   initialTemplate={selectedTemplate}
                   onClearTemplate={handleClearTemplate}

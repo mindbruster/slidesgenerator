@@ -7,8 +7,8 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { Presentation, Slide, SlideUpdate, AgentEvent, ThemeName } from "@/lib/types";
-import { SlidesRepository } from "@/lib/api/repositories";
+import type { Presentation, Slide, SlideUpdate, AgentEvent, ThemeName, SalesPitchInput } from "@/lib/types";
+import { SlidesRepository, SalesRepository } from "@/lib/api/repositories";
 
 // State
 interface SlidesState {
@@ -140,6 +140,7 @@ interface SlidesContextValue {
   // Actions
   generateSlides: (text: string, theme?: ThemeName, slideCount?: number, title?: string) => Promise<void>;
   generateFromFile: (file: File, theme?: ThemeName, slideCount?: number, title?: string) => Promise<void>;
+  generateSalesPitch: (pitch: SalesPitchInput) => Promise<void>;
   loadPresentation: (id: number) => Promise<void>;
   clearPresentation: () => void;
   startNewPresentation: () => void;
@@ -212,6 +213,29 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : "Failed to generate slides from file";
+        dispatch({ type: "SET_ERROR", payload: message });
+        throw error;
+      } finally {
+        dispatch({ type: "SET_GENERATING", payload: false });
+      }
+    },
+    [handleAgentEvent]
+  );
+
+  const generateSalesPitch = useCallback(
+    async (pitch: SalesPitchInput) => {
+      dispatch({ type: "SET_GENERATING", payload: true });
+      dispatch({ type: "SET_ERROR", payload: null });
+      dispatch({ type: "CLEAR_AGENT_EVENTS" });
+      dispatch({ type: "SET_THEME", payload: (pitch.theme as ThemeName) || "corporate" });
+
+      try {
+        await SalesRepository.generateStream(
+          { pitch },
+          handleAgentEvent
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to generate sales pitch";
         dispatch({ type: "SET_ERROR", payload: message });
         throw error;
       } finally {
@@ -297,6 +321,7 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     state,
     generateSlides,
     generateFromFile,
+    generateSalesPitch,
     loadPresentation,
     clearPresentation,
     startNewPresentation,

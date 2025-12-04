@@ -4,3 +4,7 @@ export { BulletsSlide } from './BulletsSlide';
 export { QuoteSlide } from './QuoteSlide';
 export { SectionSlide } from './SectionSlide';
 export { ChartSlide } from './ChartSlide';
+export { StatsSlide } from './StatsSlide';
+export { BigNumberSlide } from './BigNumberSlide';
+export { ComparisonSlide } from './ComparisonSlide';
+export { TimelineSlide } from './TimelineSlide';

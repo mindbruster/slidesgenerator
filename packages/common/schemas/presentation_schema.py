@@ -56,6 +56,30 @@ class PresentationListResponse(BaseModel):
 # Generation schemas
 
 
+class SalesContext(BaseModel):
+    """Context for sales-focused slide generation"""
+
+    industry: str | None = Field(
+        default=None,
+        max_length=100,
+        description="Target industry (e.g., SaaS, Healthcare, E-commerce, Finance, Real Estate)",
+    )
+    audience: str | None = Field(
+        default=None,
+        max_length=100,
+        description="Target audience (e.g., C-Suite, Investors, Technical Team, End Users)",
+    )
+    tone: str | None = Field(
+        default="professional",
+        description="Presentation tone: professional, persuasive, casual, technical, inspirational",
+    )
+    goal: str | None = Field(
+        default=None,
+        max_length=200,
+        description="Sales goal (e.g., Close deal, Get funding, Product demo, Onboarding)",
+    )
+
+
 class GenerateSlidesRequest(BaseModel):
     """Request schema for slide generation"""
 
@@ -79,6 +103,10 @@ class GenerateSlidesRequest(BaseModel):
     theme: str = Field(
         default="neobrutalism",
         description="Presentation theme (neobrutalism, corporate, minimal, dark)",
+    )
+    sales_context: SalesContext | None = Field(
+        default=None,
+        description="Optional sales context for generating sales-focused content",
     )
 
 

@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Layers } from "lucide-react";
+import { Layers, Megaphone } from "lucide-react";
 import { Button } from "@/components/atoms";
 import { cn } from "@/lib/utils/cn";
 
 const NAV_LINKS = [
+  { href: "/sales", label: "Sales Pitch", icon: Megaphone },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/faq", label: "FAQ" },
 ];
 
 export function Header() {
@@ -35,12 +35,14 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                  "px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5",
                   pathname === link.href
                     ? "text-text-primary bg-accent-pink-light"
-                    : "text-text-secondary hover:text-text-primary hover:bg-bg-white"
+                    : "text-text-secondary hover:text-text-primary hover:bg-bg-white",
+                  link.href === "/sales" && "text-accent-pink hover:text-accent-pink-hover"
                 )}
               >
+                {link.icon && <link.icon className="w-4 h-4" />}
                 {link.label}
               </Link>
             ))}

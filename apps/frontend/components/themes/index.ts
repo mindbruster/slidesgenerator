@@ -77,6 +77,10 @@ export function getSlideComponent(
     quote: components.QuoteSlide,
     section: components.SectionSlide,
     chart: components.ChartSlide,
+    stats: components.StatsSlide,
+    big_number: components.BigNumberSlide,
+    comparison: components.ComparisonSlide,
+    timeline: components.TimelineSlide,
   };
 
   return componentMap[slideType] ?? components.ContentSlide;
