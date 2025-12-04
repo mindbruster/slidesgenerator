@@ -26,7 +26,10 @@
       "Bash(cmd /c \"del \\?\\C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo\\nul\")",
       "Bash(cmd /c \"cd /d C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo && dir nul\")",
       "Bash(dir:*)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(cmd /c \"mkdir C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo\\packages\\common\\templates 2>nul\")",
+      "Bash(python scripts/seed_templates.py:*)",
+      "Bash(cmd /c \"mkdir C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo\\apps\\frontend\\app\\templates 2>nul\")"
     ],
     "deny": [],
     "ask": []

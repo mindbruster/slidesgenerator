@@ -5,14 +5,26 @@ import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Button, MiniSlidePreview } from '@/components/atoms';
 import { THEMES } from '@/lib/themes';
-import type { Template } from '@/lib/templates';
+import type { Template as OldTemplate } from '@/lib/templates';
+import type { Template as APITemplate, TemplateSlide } from '@/lib/types/template';
 import { cn } from '@/lib/utils/cn';
+
+// Support both old client-side templates and new API templates
+type Template = OldTemplate | APITemplate;
 
 interface TemplatePreviewModalProps {
   template: Template | null;
   isOpen: boolean;
   onClose: () => void;
   onUseTemplate: (template: Template) => void;
+}
+
+// Type guard to check if it's an API template
+function isAPITemplate(template: Template): template is APITemplate {
+  return 'slides' in template &&
+         Array.isArray(template.slides) &&
+         template.slides.length > 0 &&
+         'slide_type' in template.slides[0];
 }
 
 export function TemplatePreviewModal({
@@ -54,7 +66,12 @@ export function TemplatePreviewModal({
   if (!mounted || !isOpen || !template) return null;
 
   const theme = THEMES[template.theme];
-  const slide = template.slides[currentSlide];
+  const slides = template.slides;
+  const slide = slides[currentSlide];
+
+  // Get template name and description
+  const name = isAPITemplate(template) ? template.name : template.title;
+  const description = template.description;
 
   const handleUse = () => {
     onUseTemplate(template);
@@ -74,8 +91,8 @@ export function TemplatePreviewModal({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b-2 border-border-light">
           <div>
-            <h2 className="text-lg font-bold text-text-primary">{template.title}</h2>
-            <p className="text-sm text-text-muted">{template.description}</p>
+            <h2 className="text-lg font-bold text-text-primary">{name}</h2>
+            <p className="text-sm text-text-muted">{description}</p>
           </div>
           <div className="flex items-center gap-3">
             <Button onClick={handleUse}>
@@ -95,7 +112,7 @@ export function TemplatePreviewModal({
         <div className="flex">
           {/* Slide thumbnails */}
           <div className="w-48 border-r-2 border-border-light p-3 space-y-2 max-h-[70vh] overflow-y-auto bg-bg-secondary">
-            {template.slides.map((s, i) => (
+            {slides.map((s, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentSlide(i)}
@@ -111,6 +128,12 @@ export function TemplatePreviewModal({
                   <div className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black/60 rounded text-[9px] font-medium text-white">
                     {i + 1}
                   </div>
+                  {/* Show slide type for API templates */}
+                  {isAPITemplate(template) && (
+                    <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-accent-pink/80 rounded text-[8px] font-medium text-white capitalize">
+                      {(s as TemplateSlide).slide_type}
+                    </div>
+                  )}
                 </div>
               </button>
             ))}
@@ -148,8 +171,8 @@ export function TemplatePreviewModal({
               </div>
 
               <button
-                onClick={() => setCurrentSlide((p) => Math.min(template.slides.length - 1, p + 1))}
-                disabled={currentSlide === template.slides.length - 1}
+                onClick={() => setCurrentSlide((p) => Math.min(slides.length - 1, p + 1))}
+                disabled={currentSlide === slides.length - 1}
                 className={cn(
                   'absolute right-0 z-10 p-2 rounded-full bg-white border-2 border-border-dark shadow-md',
                   'hover:bg-bg-tertiary transition-colors',
@@ -163,10 +186,16 @@ export function TemplatePreviewModal({
             {/* Slide info */}
             <div className="mt-4 text-center">
               <p className="text-sm text-text-muted">
-                Slide {currentSlide + 1} of {template.slides.length}
+                Slide {currentSlide + 1} of {slides.length}
               </p>
+              {/* Show AI instructions for API templates */}
+              {isAPITemplate(template) && (slides[currentSlide] as TemplateSlide).ai_instructions && (
+                <p className="text-xs text-text-muted mt-2 italic max-w-md mx-auto">
+                  AI Guidance: {(slides[currentSlide] as TemplateSlide).ai_instructions}
+                </p>
+              )}
               <div className="mt-2 flex items-center justify-center gap-1">
-                {template.slides.map((_, i) => (
+                {slides.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentSlide(i)}
@@ -194,8 +223,14 @@ export function TemplatePreviewModal({
               Theme: {theme.display_name}
             </div>
             <span className="text-sm text-text-muted">
-              {template.slides.length} slides
+              {slides.length} slides
             </span>
+            {/* Show category for API templates */}
+            {isAPITemplate(template) && (
+              <span className="text-sm text-text-muted capitalize">
+                Category: {template.category}
+              </span>
+            )}
           </div>
           <p className="text-xs text-text-muted">
             Press arrow keys to navigate, Esc to close

@@ -1,5 +1,6 @@
 """
 Alembic environment configuration for database migrations
+
 """
 
 import asyncio

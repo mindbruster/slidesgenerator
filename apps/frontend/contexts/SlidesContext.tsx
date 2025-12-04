@@ -7,8 +7,8 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { Presentation, Slide, SlideUpdate, AgentEvent, ThemeName, SalesPitchInput } from "@/lib/types";
-import { SlidesRepository, SalesRepository } from "@/lib/api/repositories";
+import type { Presentation, Slide, SlideUpdate, AgentEvent, ThemeName, SalesPitchInput, TemplateGenerateRequest } from "@/lib/types";
+import { SlidesRepository, SalesRepository, TemplateRepository } from "@/lib/api/repositories";
 
 // State
 interface SlidesState {
@@ -174,6 +174,7 @@ interface SlidesContextValue {
   // Actions
   generateSlides: (text: string, theme?: ThemeName, slideCount?: number, title?: string) => Promise<void>;
   generateFromFile: (file: File, theme?: ThemeName, slideCount?: number, title?: string) => Promise<void>;
+  generateFromTemplate: (templateId: number, request: TemplateGenerateRequest) => Promise<void>;
   generateSalesPitch: (pitch: SalesPitchInput) => Promise<void>;
   loadPresentation: (id: number) => Promise<void>;
   clearPresentation: () => void;
@@ -281,6 +282,30 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     [handleAgentEvent]
   );
 
+  const generateFromTemplate = useCallback(
+    async (templateId: number, request: TemplateGenerateRequest) => {
+      dispatch({ type: "SET_GENERATING", payload: true });
+      dispatch({ type: "SET_ERROR", payload: null });
+      dispatch({ type: "CLEAR_AGENT_EVENTS" });
+      dispatch({ type: "SET_THEME", payload: (request.theme as ThemeName) || "neobrutalism" });
+
+      try {
+        await TemplateRepository.generateStream(
+          templateId,
+          request,
+          handleAgentEvent
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to generate from template";
+        dispatch({ type: "SET_ERROR", payload: message });
+        throw error;
+      } finally {
+        dispatch({ type: "SET_GENERATING", payload: false });
+      }
+    },
+    [handleAgentEvent]
+  );
+
   const loadPresentation = useCallback(async (id: number) => {
     dispatch({ type: "SET_GENERATING", payload: true });
     try {
@@ -365,6 +390,7 @@ export function SlidesProvider({ children }: { children: ReactNode }) {
     state,
     generateSlides,
     generateFromFile,
+    generateFromTemplate,
     generateSalesPitch,
     loadPresentation,
     clearPresentation,
