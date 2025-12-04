@@ -3,8 +3,12 @@
 import { cn } from '@/lib/utils/cn';
 import { THEMES } from '@/lib/themes';
 import { MiniSlidePreview } from './MiniSlidePreview';
-import type { Template } from '@/lib/templates';
-import { Eye } from 'lucide-react';
+import type { Template as OldTemplate } from '@/lib/templates';
+import type { Template as APITemplate, TemplateListItem } from '@/lib/types/template';
+import { Eye, TrendingUp } from 'lucide-react';
+
+// Support both old client-side templates and new API templates
+type Template = OldTemplate | APITemplate | TemplateListItem;
 
 export interface TemplateCardProps {
   template: Template;
@@ -12,9 +16,65 @@ export interface TemplateCardProps {
   onPreview?: (template: Template) => void;
 }
 
+// Type guard for API template (has 'slides' array with slide_type)
+function isAPITemplate(template: Template): template is APITemplate {
+  return 'slides' in template && Array.isArray(template.slides) &&
+         template.slides.length > 0 && 'slide_type' in template.slides[0];
+}
+
+// Type guard for template list item (has slide_count instead of slides)
+function isTemplateListItem(template: Template): template is TemplateListItem {
+  return 'slide_count' in template && !('slides' in template);
+}
+
+// Type guard for old template
+function isOldTemplate(template: Template): template is OldTemplate {
+  return 'samplePrompt' in template;
+}
+
 export function TemplateCard({ template, onClick, onPreview }: TemplateCardProps) {
   const theme = THEMES[template.theme];
-  const firstSlide = template.slides[0];
+
+  // Get the first slide for preview (or create a placeholder)
+  const getFirstSlide = () => {
+    if (isTemplateListItem(template)) {
+      // For list items, we don't have slides - create a placeholder
+      return {
+        slide_type: 'title' as const,
+        placeholder_title: template.name,
+        layout: 'center' as const,
+        order: 1,
+        id: 0,
+        placeholder_body: null,
+        placeholder_bullets: null,
+        ai_instructions: template.description,
+        is_required: true,
+      };
+    }
+    if (isAPITemplate(template)) {
+      return template.slides[0];
+    }
+    if (isOldTemplate(template)) {
+      return template.slides[0];
+    }
+    return null;
+  };
+
+  const firstSlide = getFirstSlide();
+
+  // Get template name and description
+  const name = isOldTemplate(template) ? template.title : template.name;
+  const description = template.description;
+
+  // Get slide count
+  const slideCount = isTemplateListItem(template)
+    ? template.slide_count
+    : 'slides' in template
+      ? template.slides.length
+      : 0;
+
+  // Get usage count for API templates
+  const usageCount = 'usage_count' in template ? template.usage_count : 0;
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -32,7 +92,9 @@ export function TemplateCard({ template, onClick, onPreview }: TemplateCardProps
     >
       {/* Preview area showing first slide */}
       <div className="relative overflow-hidden bg-gray-100">
-        <MiniSlidePreview slide={firstSlide} theme={template.theme} scale={0.18} />
+        {firstSlide && (
+          <MiniSlidePreview slide={firstSlide} theme={template.theme} scale={0.18} />
+        )}
 
         {/* Hover overlay with preview button */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -59,17 +121,25 @@ export function TemplateCard({ template, onClick, onPreview }: TemplateCardProps
 
         {/* Slide count badge */}
         <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/60 rounded text-[10px] font-medium text-white">
-          {template.slides.length} slides
+          {slideCount} slides
         </div>
+
+        {/* Usage count badge (for popular templates) */}
+        {usageCount > 0 && (
+          <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 bg-accent-pink/90 rounded text-[10px] font-medium text-white">
+            <TrendingUp className="w-3 h-3" />
+            {usageCount}
+          </div>
+        )}
       </div>
 
       {/* Info area */}
       <div className="p-3 bg-bg-white border-t-2 border-border-light">
         <h3 className="font-semibold text-sm text-text-primary truncate">
-          {template.title}
+          {name}
         </h3>
         <p className="text-xs text-text-muted mt-0.5 line-clamp-1">
-          {template.description}
+          {description}
         </p>
       </div>
     </div>

@@ -2,6 +2,8 @@
 Slide generation endpoints
 """
 
+import logging
+
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 
@@ -10,6 +12,7 @@ from packages.common.schemas import GenerateSlidesRequest, GenerateSlidesRespons
 from packages.common.services.file_extractor import file_extractor
 from packages.common.services.slide_generator import SlideGeneratorService
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -53,23 +56,30 @@ async def generate_slides_stream(
 
     Note: Uses own session factory to manage DB lifecycle within the streaming context.
     """
+    logger.info(f"=== STREAM ENDPOINT CALLED === text_length={len(request.text)}")
 
     async def event_stream():
+        logger.info("=== EVENT STREAM GENERATOR STARTED ===")
         # Create session inside the generator to ensure proper lifecycle
         async with async_session_factory() as db:
+            logger.info("Database session created")
             try:
                 generator = SlideGeneratorService(db)
+                logger.info("SlideGeneratorService created, starting stream...")
                 async for event in generator.generate_stream(
                     text=request.text,
                     slide_count=request.slide_count or 8,
                     title=request.title,
                     theme=request.theme,
                 ):
+                    logger.info(f"Event received: {event.type}")
                     yield event.to_sse()
             except Exception as e:
+                logger.error(f"Stream error: {e}", exc_info=True)
                 await db.rollback()
                 yield f'data: {{"type": "error", "message": "{str(e)}"}}\n\n'
 
+    logger.info("Returning StreamingResponse")
     return StreamingResponse(
         event_stream(),
         media_type="text/event-stream",

@@ -172,6 +172,7 @@ export interface GenerateSlidesRequest {
 
 export interface GenerateSlidesResponse {
   presentation: Presentation;
+  presentation_id?: number;
 }
 
 export interface SlideUpdate {

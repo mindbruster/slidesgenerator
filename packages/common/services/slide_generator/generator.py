@@ -58,6 +58,7 @@ class SlideGeneratorService:
         title: str | None = None,
         theme: str = "neobrutalism",
         api_key_id: int | None = None,
+        template_prompt: str | None = None,
     ) -> PresentationResponse:
         """
         Generate a presentation from input text using tool calling.
@@ -68,6 +69,7 @@ class SlideGeneratorService:
             title: Optional presentation title (auto-generated if not provided)
             theme: Presentation theme name
             api_key_id: Optional API key ID (for public API tracking)
+            template_prompt: Optional template structure guidance for AI
 
         Returns:
             PresentationResponse with generated slides
@@ -88,10 +90,14 @@ class SlideGeneratorService:
         await self.db.flush()  # Get presentation.id
 
         # Build initial messages
+        system_content = SYSTEM_PROMPT.format(slide_count=slide_count)
+        if template_prompt:
+            system_content += f"\n\n{template_prompt}"
+
         messages: list[dict[str, Any]] = [
             {
                 "role": "system",
-                "content": SYSTEM_PROMPT.format(slide_count=slide_count),
+                "content": system_content,
             },
             {"role": "user", "content": text},
         ]
@@ -174,59 +180,79 @@ class SlideGeneratorService:
         slide_count: int = 8,
         title: str | None = None,
         theme: str = "neobrutalism",
+        template_prompt: str | None = None,
     ) -> AsyncGenerator[AgentEvent, None]:
         """
         Generate a presentation with real-time event streaming.
 
         Yields AgentEvent objects for UI updates as the agent works.
         """
-        logger.info(f"Streaming generation with {slide_count} slides")
+        logger.info(f"=== STREAM START === slide_count={slide_count}, theme={theme}")
+        logger.info(f"Text length: {len(text)} chars")
+        if template_prompt:
+            logger.info(f"Template prompt length: {len(template_prompt)} chars")
 
         # Set current theme for tool calls
         self.current_theme = get_theme(theme)
+        logger.info(f"Theme set: {self.current_theme.name if self.current_theme else 'None'}")
 
         # Emit start event
+        logger.info("Yielding first thinking event...")
         yield AgentEvent(
             type="thinking",
             data={"message": "Analyzing your content..."},
         )
+        logger.info("First event yielded successfully")
 
         # Create presentation shell
+        logger.info("Creating presentation shell...")
         presentation = Presentation(
             title=title or "Untitled Presentation",
             input_text=text,
             theme=theme,
         )
         self.db.add(presentation)
+        logger.info("Flushing to database...")
         await self.db.flush()
+        logger.info(f"Presentation created with ID: {presentation.id}")
 
         # Build initial messages
+        logger.info("Building initial messages...")
+        system_content = SYSTEM_PROMPT.format(slide_count=slide_count)
+        if template_prompt:
+            system_content += f"\n\n{template_prompt}"
+        logger.info(f"System prompt length: {len(system_content)} chars")
+
         messages: list[dict[str, Any]] = [
             {
                 "role": "system",
-                "content": SYSTEM_PROMPT.format(slide_count=slide_count),
+                "content": system_content,
             },
             {"role": "user", "content": text},
         ]
 
         slide_order = 0
         presentation_id = presentation.id
+        logger.info(f"Starting agentic loop. Presentation ID: {presentation_id}")
 
         # Agentic loop
         for iteration in range(MAX_ITERATIONS):
+            logger.info(f"=== ITERATION {iteration + 1} START ===")
             yield AgentEvent(
                 type="thinking",
                 data={"message": f"Planning slide {slide_order + 1}...", "iteration": iteration + 1},
             )
+            logger.info(f"Iteration {iteration + 1}: Thinking event yielded")
 
             try:
-                logger.info(f"Calling LLM API (iteration {iteration + 1})...")
+                logger.info(f"Iteration {iteration + 1}: Calling LLM API...")
+                logger.info(f"Model: {self.llm.model}, Messages count: {len(messages)}")
                 response = await self.llm.complete_with_tools(
                     messages=messages,
                     tools=SLIDE_TOOLS,
                     temperature=0.7,
                 )
-                logger.info(f"LLM API call completed (iteration {iteration + 1})")
+                logger.info(f"Iteration {iteration + 1}: LLM API call completed successfully")
             except Exception as e:
                 logger.error(f"LLM API call failed (iteration {iteration + 1}): {e}", exc_info=True)
                 yield AgentEvent(

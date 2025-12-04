@@ -8,9 +8,10 @@ import {
   TEMPLATES,
   TEMPLATE_CATEGORIES,
   getAllCategories,
-  type Template,
+  type Template as OldTemplate,
   type TemplateCategory,
 } from '@/lib/templates';
+import type { Template as APITemplate } from '@/lib/types/template';
 import {
   Briefcase,
   GraduationCap,
@@ -23,6 +24,9 @@ import {
   Eye,
 } from 'lucide-react';
 import { TemplatePreviewModal } from './TemplatePreviewModal';
+
+// Union type for templates - sidebar uses old templates but passes to modal which supports both
+type Template = OldTemplate;
 
 const CATEGORY_ICONS: Record<TemplateCategory | 'all', React.ElementType> = {
   all: LayoutGrid,
@@ -49,8 +53,9 @@ export function TemplateSidebar({ onSelectTemplate, selectedTemplate }: Template
       ? TEMPLATES
       : TEMPLATES.filter((t) => t.category === selectedCategory);
 
-  const handleSelectTemplate = (template: Template) => {
-    onSelectTemplate(template);
+  // Handle template selection - accepts union type from modal but sidebar only uses OldTemplate
+  const handleSelectTemplate = (template: OldTemplate | APITemplate) => {
+    onSelectTemplate(template as Template);
   };
 
   const handlePreviewTemplate = (template: Template, e: React.MouseEvent) => {

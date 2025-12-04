@@ -9,6 +9,7 @@ from apps.slides_api.api.v1.presentations import router as presentations_router
 from apps.slides_api.api.v1.export import router as export_router
 from apps.slides_api.api.v1.themes import router as themes_router
 from apps.slides_api.api.v1.sales import router as sales_router
+from apps.slides_api.api.v1.templates import router as templates_router
 
 api_router = APIRouter()
 
@@ -17,3 +18,4 @@ api_router.include_router(presentations_router, prefix="/presentations", tags=["
 api_router.include_router(export_router, prefix="/export", tags=["export"])
 api_router.include_router(themes_router, prefix="/themes", tags=["themes"])
 api_router.include_router(sales_router, prefix="/sales", tags=["sales"])
+api_router.include_router(templates_router, prefix="/templates", tags=["templates"])

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Layers, Megaphone } from "lucide-react";
+import { Layers, Megaphone, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/atoms";
 import { cn } from "@/lib/utils/cn";
 
 const NAV_LINKS = [
+  { href: "/templates", label: "Templates", icon: LayoutTemplate },
   { href: "/sales", label: "Sales Pitch", icon: Megaphone },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },

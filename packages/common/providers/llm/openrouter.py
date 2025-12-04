@@ -147,18 +147,29 @@ class OpenRouterProvider:
         if not self.api_key:
             raise ValueError("OpenRouter API key not configured")
 
-        response = await self.openai_client.chat.completions.create(
-            model=self.model,
-            messages=messages,  # type: ignore
-            tools=tools,  # type: ignore
-            tool_choice="auto",
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
+        logger.info(f"=== OPENROUTER REQUEST START ===")
+        logger.info(f"Model: {self.model}")
+        logger.info(f"Messages count: {len(messages)}")
+        logger.info(f"Tools count: {len(tools)}")
+        logger.info(f"Base URL: {self.base_url}")
+
+        try:
+            response = await self.openai_client.chat.completions.create(
+                model=self.model,
+                messages=messages,  # type: ignore
+                tools=tools,  # type: ignore
+                tool_choice="auto",
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            logger.info(f"=== OPENROUTER REQUEST SUCCESS ===")
+        except Exception as e:
+            logger.error(f"=== OPENROUTER REQUEST FAILED ===: {e}", exc_info=True)
+            raise
 
         usage = response.usage
         if usage:
-            logger.debug(
+            logger.info(
                 f"OpenRouter tool completion: model={self.model}, "
                 f"tokens={usage.total_tokens}"
             )

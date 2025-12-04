@@ -32,6 +32,19 @@ from packages.common.schemas.sales_schema import (
     SocialProof,
     TargetMarket,
 )
+from packages.common.schemas.template_schema import (
+    CategoryCount,
+    TemplateBase,
+    TemplateCategory,
+    TemplateCreate,
+    TemplateGenerateRequest,
+    TemplateListResponse,
+    TemplateResponse,
+    TemplateSlideBase,
+    TemplateSlideCreate,
+    TemplateSlideResponse,
+    TemplateUpdate,
+)
 
 __all__ = [
     # API Keys
@@ -63,4 +76,16 @@ __all__ = [
     "SalesPitchTextResponse",
     "SocialProof",
     "TargetMarket",
+    # Templates
+    "CategoryCount",
+    "TemplateBase",
+    "TemplateCategory",
+    "TemplateCreate",
+    "TemplateGenerateRequest",
+    "TemplateListResponse",
+    "TemplateResponse",
+    "TemplateSlideBase",
+    "TemplateSlideCreate",
+    "TemplateSlideResponse",
+    "TemplateUpdate",
 ]
