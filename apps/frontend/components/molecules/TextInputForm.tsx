@@ -1,10 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button, TextArea, SlideCountSelector } from "@/components/atoms";
-import { Sparkles, X } from "lucide-react";
-import { useState, useRef } from "react";
-import { Button, TextArea } from "@/components/atoms";
 import { ThemeSelector } from "./ThemeSelector";
 import { Sparkles, Upload, X, FileText } from "lucide-react";
 import type { ThemeName } from "@/lib/types/slide";
@@ -16,6 +13,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 interface TextInputFormProps {
   onSubmit: (text: string, theme: ThemeName, slideCount: number) => Promise<void>;
+  onFileSubmit?: (file: File, theme: ThemeName) => Promise<void>;
   isLoading?: boolean;
   initialTemplate?: Template | null;
   onClearTemplate?: () => void;
@@ -23,7 +21,7 @@ interface TextInputFormProps {
 
 const DEFAULT_SLIDE_COUNT = 8;
 
-export function TextInputForm({ onSubmit, isLoading, initialTemplate, onClearTemplate }: TextInputFormProps) {
+export function TextInputForm({ onSubmit, onFileSubmit, isLoading, initialTemplate, onClearTemplate }: TextInputFormProps) {
   const [text, setText] = useState("");
   const [theme, setTheme] = useState<ThemeName>("neobrutalism");
   const [slideCount, setSlideCount] = useState(DEFAULT_SLIDE_COUNT);

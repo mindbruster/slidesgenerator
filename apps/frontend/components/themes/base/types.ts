@@ -38,6 +38,10 @@ export interface ThemeSlideComponents {
   QuoteSlide: React.ComponentType<SlideComponentProps>;
   SectionSlide: React.ComponentType<SlideComponentProps>;
   ChartSlide: React.ComponentType<SlideComponentProps>;
+  StatsSlide: React.ComponentType<SlideComponentProps>;
+  BigNumberSlide: React.ComponentType<SlideComponentProps>;
+  ComparisonSlide: React.ComponentType<SlideComponentProps>;
+  TimelineSlide: React.ComponentType<SlideComponentProps>;
 }
 
 /**

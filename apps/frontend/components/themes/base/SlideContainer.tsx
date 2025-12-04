@@ -24,11 +24,23 @@ export function SlideContainer({ theme, children, className }: SlideContainerPro
     return style.shadow;
   };
 
+  // Build background CSS - use gradient if available, otherwise solid color
+  const getBackgroundCSS = (): React.CSSProperties => {
+    if (style.background_gradient) {
+      return {
+        background: style.background_gradient,
+      };
+    }
+    return {
+      backgroundColor: colors.background,
+    };
+  };
+
   return (
     <div
       className={cn('w-full aspect-video overflow-hidden relative', className)}
       style={{
-        backgroundColor: colors.background,
+        ...getBackgroundCSS(),
         borderWidth: style.border_width,
         borderStyle: style.border_style,
         borderColor: colors.border_dark,

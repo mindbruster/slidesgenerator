@@ -13,7 +13,10 @@ if TYPE_CHECKING:
     from packages.common.models.presentation import Presentation
 
 
-SlideType = Literal["title", "content", "bullets", "quote", "section", "chart"]
+SlideType = Literal[
+    "title", "content", "bullets", "quote", "section", "chart",
+    "stats", "big_number", "comparison", "timeline"
+]
 SlideLayout = Literal["left", "center", "right", "split"]
 ChartType = Literal["bar", "line", "pie", "donut", "area", "horizontal_bar"]
 
@@ -53,19 +56,33 @@ class Slide(Base, TimestampMixin):
     title: Mapped[str | None] = mapped_column(String(255), nullable=True)
     subtitle: Mapped[str | None] = mapped_column(String(255), nullable=True)
     body: Mapped[str | None] = mapped_column(Text, nullable=True)
-    bullets: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
+    bullets: Mapped[list[str] | None] = mapped_column(JSON(none_as_null=True), nullable=True)
     quote: Mapped[str | None] = mapped_column(Text, nullable=True)
     attribution: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     # Chart fields
     chart_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    chart_data: Mapped[list[dict[str, Any]] | None] = mapped_column(JSON, nullable=True)
-    chart_config: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    chart_data: Mapped[list[dict[str, Any]] | None] = mapped_column(JSON(none_as_null=True), nullable=True)
+    chart_config: Mapped[dict[str, Any] | None] = mapped_column(JSON(none_as_null=True), nullable=True)
 
     # Image fields (for slides with images from Unsplash)
     image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     image_alt: Mapped[str | None] = mapped_column(String(255), nullable=True)
     image_credit: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    # Stats fields (for stats slides)
+    stats: Mapped[list[dict[str, Any]] | None] = mapped_column(JSON(none_as_null=True), nullable=True)
+
+    # Big number fields
+    big_number_value: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    big_number_label: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    big_number_context: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Comparison fields
+    comparison_columns: Mapped[list[dict[str, Any]] | None] = mapped_column(JSON(none_as_null=True), nullable=True)
+
+    # Timeline fields
+    timeline_items: Mapped[list[dict[str, Any]] | None] = mapped_column(JSON(none_as_null=True), nullable=True)
 
     # Layout
     layout: Mapped[str] = mapped_column(String(50), default="center", nullable=False)

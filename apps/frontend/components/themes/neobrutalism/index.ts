@@ -19,6 +19,10 @@ import {
   QuoteSlide,
   SectionSlide,
   ChartSlide,
+  StatsSlide,
+  BigNumberSlide,
+  ComparisonSlide,
+  TimelineSlide,
 } from './slides';
 
 export const neobrutalismTheme: ThemeRegistration = {
@@ -30,5 +34,9 @@ export const neobrutalismTheme: ThemeRegistration = {
     QuoteSlide,
     SectionSlide,
     ChartSlide,
+    StatsSlide,
+    BigNumberSlide,
+    ComparisonSlide,
+    TimelineSlide,
   },
 };

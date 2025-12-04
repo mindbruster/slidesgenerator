@@ -7,7 +7,10 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 
-SlideType = Literal["title", "content", "bullets", "quote", "section", "chart"]
+SlideType = Literal[
+    "title", "content", "bullets", "quote", "section", "chart",
+    "stats", "big_number", "comparison", "timeline"
+]
 SlideLayout = Literal["left", "center", "right", "split"]
 ChartType = Literal["bar", "line", "pie", "donut", "area", "horizontal_bar"]
 
@@ -27,6 +30,30 @@ class ChartConfig(BaseModel):
     show_values: bool = True
     y_axis_label: str | None = None
     x_axis_label: str | None = None
+
+
+class StatItem(BaseModel):
+    """Single stat for stats slide"""
+
+    value: str = Field(..., description="The metric value (e.g., '50%', '10x', '$1M')")
+    label: str = Field(..., description="Label describing the stat (e.g., 'Cost Reduction')")
+    description: str | None = Field(default=None, description="Optional longer description")
+
+
+class ComparisonColumn(BaseModel):
+    """Column for comparison slide"""
+
+    title: str = Field(..., description="Column header (e.g., 'Before', 'After')")
+    items: list[str] = Field(..., description="List of comparison items")
+    highlight: bool = Field(default=False, description="Whether to highlight this column")
+
+
+class TimelineItem(BaseModel):
+    """Single item in a timeline"""
+
+    title: str = Field(..., description="Step/milestone title")
+    description: str | None = Field(default=None, description="Optional description")
+    date: str | None = Field(default=None, description="Optional date or period")
 
 
 class SlideBase(BaseModel):
@@ -49,6 +76,16 @@ class SlideBase(BaseModel):
     image_url: str | None = None
     image_alt: str | None = None
     image_credit: str | None = None
+    # Stats fields
+    stats: list[StatItem] | None = None
+    # Big number fields
+    big_number_value: str | None = None
+    big_number_label: str | None = None
+    big_number_context: str | None = None
+    # Comparison fields
+    comparison_columns: list[ComparisonColumn] | None = None
+    # Timeline fields
+    timeline_items: list[TimelineItem] | None = None
 
 
 class SlideCreate(SlideBase):
@@ -77,6 +114,16 @@ class SlideUpdate(BaseModel):
     image_url: str | None = None
     image_alt: str | None = None
     image_credit: str | None = None
+    # Stats fields
+    stats: list[StatItem] | None = None
+    # Big number fields
+    big_number_value: str | None = None
+    big_number_label: str | None = None
+    big_number_context: str | None = None
+    # Comparison fields
+    comparison_columns: list[ComparisonColumn] | None = None
+    # Timeline fields
+    timeline_items: list[TimelineItem] | None = None
 
 
 class SlideResponse(SlideBase):

@@ -3,28 +3,32 @@
 import { cn } from "@/lib/utils/cn";
 import { Minus, Plus } from "lucide-react";
 
-const MIN_SLIDES = 5;
-const MAX_SLIDES = 15;
+const DEFAULT_MIN_SLIDES = 5;
+const DEFAULT_MAX_SLIDES = 15;
 
 export interface SlideCountSelectorProps {
   value: number;
   onChange: (count: number) => void;
   disabled?: boolean;
+  min?: number;
+  max?: number;
 }
 
 export function SlideCountSelector({
   value,
   onChange,
   disabled,
+  min = DEFAULT_MIN_SLIDES,
+  max = DEFAULT_MAX_SLIDES,
 }: SlideCountSelectorProps) {
   const handleDecrement = () => {
-    if (value > MIN_SLIDES) {
+    if (value > min) {
       onChange(value - 1);
     }
   };
 
   const handleIncrement = () => {
-    if (value < MAX_SLIDES) {
+    if (value < max) {
       onChange(value + 1);
     }
   };
@@ -33,7 +37,7 @@ export function SlideCountSelector({
     onChange(parseInt(e.target.value, 10));
   };
 
-  const percentage = ((value - MIN_SLIDES) / (MAX_SLIDES - MIN_SLIDES)) * 100;
+  const percentage = ((value - min) / (max - min)) * 100;
 
   return (
     <div className={cn("space-y-4", disabled && "opacity-50 pointer-events-none")}>
@@ -44,11 +48,11 @@ export function SlideCountSelector({
           <button
             type="button"
             onClick={handleDecrement}
-            disabled={disabled || value <= MIN_SLIDES}
+            disabled={disabled || value <= min}
             className={cn(
               "w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all duration-200",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink focus-visible:ring-offset-2",
-              value <= MIN_SLIDES
+              value <= min
                 ? "border-border-light text-text-muted cursor-not-allowed"
                 : "border-border-dark bg-bg-white text-text-primary hover:bg-bg-tertiary hover:shadow-[2px_2px_0px_0px_#0f0f0f] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
             )}
@@ -65,11 +69,11 @@ export function SlideCountSelector({
           <button
             type="button"
             onClick={handleIncrement}
-            disabled={disabled || value >= MAX_SLIDES}
+            disabled={disabled || value >= max}
             className={cn(
               "w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all duration-200",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink focus-visible:ring-offset-2",
-              value >= MAX_SLIDES
+              value >= max
                 ? "border-border-light text-text-muted cursor-not-allowed"
                 : "border-border-dark bg-bg-white text-text-primary hover:bg-bg-tertiary hover:shadow-[2px_2px_0px_0px_#0f0f0f] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
             )}
@@ -80,7 +84,7 @@ export function SlideCountSelector({
 
         {/* Range labels */}
         <div className="text-sm text-text-muted">
-          {MIN_SLIDES} - {MAX_SLIDES} slides
+          {min} - {max} slides
         </div>
       </div>
 
@@ -98,8 +102,8 @@ export function SlideCountSelector({
         {/* Native range input (invisible, for interaction) */}
         <input
           type="range"
-          min={MIN_SLIDES}
-          max={MAX_SLIDES}
+          min={min}
+          max={max}
           value={value}
           onChange={handleSliderChange}
           disabled={disabled}
@@ -116,7 +120,7 @@ export function SlideCountSelector({
 
         {/* Tick marks */}
         <div className="flex justify-between mt-2 px-1">
-          {Array.from({ length: MAX_SLIDES - MIN_SLIDES + 1 }, (_, i) => MIN_SLIDES + i).map((num) => (
+          {Array.from({ length: max - min + 1 }, (_, i) => min + i).map((num) => (
             <button
               key={num}
               type="button"
