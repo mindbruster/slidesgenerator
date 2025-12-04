@@ -61,7 +61,7 @@ export function TemplateSidebar({ onSelectTemplate, selectedTemplate }: Template
 
   if (isCollapsed) {
     return (
-      <div className="w-12 border-r-2 border-border-dark bg-bg-white flex flex-col items-center py-4">
+      <div className="hidden md:flex w-12 border-r-2 border-border-dark bg-bg-white flex-col items-center py-4">
         <button
           type="button"
           onClick={() => setIsCollapsed(false)}
@@ -100,7 +100,7 @@ export function TemplateSidebar({ onSelectTemplate, selectedTemplate }: Template
 
   return (
     <>
-      <div className="w-72 border-r-2 border-border-dark bg-bg-white flex flex-col h-full">
+      <div className="hidden md:flex w-72 border-r-2 border-border-dark bg-bg-white flex-col h-full">
         {/* Header */}
         <div className="p-4 border-b-2 border-border-light flex items-center justify-between">
           <h2 className="text-lg font-bold text-text-primary">Templates</h2>
