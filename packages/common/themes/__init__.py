@@ -26,6 +26,10 @@ class ThemeName(str, Enum):
     TERMINAL = "terminal"
     PLAYFUL = "playful"
     AI = "ai"
+    OCEAN = "ocean"
+    SUNSET = "sunset"
+    FOREST = "forest"
+    LAVENDER = "lavender"
 
 
 # =============================================================================
@@ -635,6 +639,221 @@ THEMES: dict[str, Theme] = {
         layout=ThemeLayout(
             title_alignment="center",
             content_alignment="left",
+            vertical_position="center",
+        ),
+    ),
+    # -------------------------------------------------------------------------
+    # OCEAN - Fresh aquatic theme with blue/teal gradient
+    # -------------------------------------------------------------------------
+    "ocean": Theme(
+        name=ThemeName.OCEAN,
+        display_name="Ocean",
+        description="Fresh aquatic theme with blue and teal gradients",
+        colors=ThemeColors(
+            background="#e0f7fa",
+            surface="#ffffff",
+            text_primary="#004d61",
+            text_secondary="#00796b",
+            accent="#00bcd4",
+            accent_hover="#0097a7",
+            accent_light="#b2ebf2",
+            border="#80deea",
+            border_dark="#004d61",
+        ),
+        typography=ThemeTypography(
+            heading_font="Poppins, system-ui, sans-serif",
+            body_font="Poppins, system-ui, sans-serif",
+            google_fonts=["Poppins:wght@400;500;600;700;800"],
+            title_size="6xl",
+            title_weight=700,
+            heading_weight=600,
+            body_line_height=1.6,
+        ),
+        style=ThemeStyle(
+            border_width="2px",
+            border_style="solid",
+            border_radius="20px",
+            shadow="5px 5px 0px 0px",
+            accent_bar_position="bottom",
+            accent_bar_width="5px",
+            background_gradient="linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #80deea 100%)",
+        ),
+        spacing=ThemeSpacing(
+            slide_padding="80px",
+            element_gap="28px",
+            bullet_gap="16px",
+        ),
+        decorations=ThemeDecorations(
+            bullet_style="disc",
+            bullet_size="12px",
+            quote_style="large-mark",
+            section_divider="accent-block",
+        ),
+        layout=ThemeLayout(
+            title_alignment="center",
+            content_alignment="left",
+            vertical_position="center",
+        ),
+    ),
+    # -------------------------------------------------------------------------
+    # SUNSET - Warm orange and purple gradient theme
+    # -------------------------------------------------------------------------
+    "sunset": Theme(
+        name=ThemeName.SUNSET,
+        display_name="Sunset",
+        description="Warm sunset colors with orange and purple gradients",
+        colors=ThemeColors(
+            background="#fff4e6",
+            surface="#ffffff",
+            text_primary="#4a1942",
+            text_secondary="#7b2d26",
+            accent="#ff6f00",
+            accent_hover="#e65100",
+            accent_light="#ffe0b2",
+            border="#ffb74d",
+            border_dark="#4a1942",
+        ),
+        typography=ThemeTypography(
+            heading_font="Montserrat, system-ui, sans-serif",
+            body_font="Open Sans, system-ui, sans-serif",
+            google_fonts=["Montserrat:wght@400;600;700;800", "Open+Sans:wght@400;600"],
+            title_size="6xl",
+            title_weight=800,
+            heading_size="4xl",
+            heading_weight=700,
+            body_line_height=1.6,
+        ),
+        style=ThemeStyle(
+            border_width="2px",
+            border_style="solid",
+            border_radius="16px",
+            shadow="4px 4px 0px 0px",
+            accent_bar_position="left",
+            accent_bar_width="6px",
+            background_gradient="linear-gradient(135deg, #fff4e6 0%, #ffe0b2 30%, #ffb74d 60%, #ce93d8 100%)",
+        ),
+        spacing=ThemeSpacing(
+            slide_padding="80px",
+            element_gap="28px",
+            bullet_gap="16px",
+        ),
+        decorations=ThemeDecorations(
+            bullet_style="disc",
+            bullet_size="12px",
+            quote_style="large-mark",
+            section_divider="accent-block",
+        ),
+        layout=ThemeLayout(
+            title_alignment="left",
+            content_alignment="left",
+            vertical_position="center",
+        ),
+    ),
+    # -------------------------------------------------------------------------
+    # FOREST - Natural green theme with earthy tones
+    # -------------------------------------------------------------------------
+    "forest": Theme(
+        name=ThemeName.FOREST,
+        display_name="Forest",
+        description="Natural green theme with fresh, earthy tones",
+        colors=ThemeColors(
+            background="#e8f5e9",
+            surface="#ffffff",
+            text_primary="#1b5e20",
+            text_secondary="#388e3c",
+            accent="#4caf50",
+            accent_hover="#388e3c",
+            accent_light="#c8e6c9",
+            border="#81c784",
+            border_dark="#1b5e20",
+        ),
+        typography=ThemeTypography(
+            heading_font="Raleway, system-ui, sans-serif",
+            body_font="Lato, system-ui, sans-serif",
+            google_fonts=["Raleway:wght@400;600;700;800", "Lato:wght@400;700"],
+            title_size="6xl",
+            title_weight=700,
+            heading_weight=600,
+            body_line_height=1.7,
+        ),
+        style=ThemeStyle(
+            border_width="2px",
+            border_style="solid",
+            border_radius="12px",
+            shadow="3px 3px 0px 0px",
+            accent_bar_position="top",
+            accent_bar_width="4px",
+            background_gradient="linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%)",
+        ),
+        spacing=ThemeSpacing(
+            slide_padding="90px",
+            element_gap="30px",
+            bullet_gap="18px",
+        ),
+        decorations=ThemeDecorations(
+            bullet_style="check",
+            bullet_size="14px",
+            quote_style="accent-bar",
+            section_divider="line",
+        ),
+        layout=ThemeLayout(
+            title_alignment="center",
+            content_alignment="left",
+            vertical_position="center",
+        ),
+    ),
+    # -------------------------------------------------------------------------
+    # LAVENDER - Soft purple and pink theme with elegant feel
+    # -------------------------------------------------------------------------
+    "lavender": Theme(
+        name=ThemeName.LAVENDER,
+        display_name="Lavender",
+        description="Soft lavender theme with elegant purple and pink tones",
+        colors=ThemeColors(
+            background="#f3e5f5",
+            surface="#ffffff",
+            text_primary="#4a148c",
+            text_secondary="#7b1fa2",
+            accent="#9c27b0",
+            accent_hover="#7b1fa2",
+            accent_light="#e1bee7",
+            border="#ce93d8",
+            border_dark="#4a148c",
+        ),
+        typography=ThemeTypography(
+            heading_font="Quicksand, system-ui, sans-serif",
+            body_font="Quicksand, system-ui, sans-serif",
+            google_fonts=["Quicksand:wght@400;500;600;700"],
+            title_size="6xl",
+            title_weight=700,
+            heading_weight=600,
+            body_weight=500,
+            body_line_height=1.6,
+        ),
+        style=ThemeStyle(
+            border_width="2px",
+            border_style="solid",
+            border_radius="18px",
+            shadow="4px 4px 0px 0px",
+            accent_bar_position="none",
+            background_pattern="dots",
+            pattern_opacity=0.06,
+            background_gradient="linear-gradient(135deg, #f3e5f5 0%, #e1bee7 50%, #ce93d8 100%)",
+        ),
+        spacing=ThemeSpacing(
+            slide_padding="85px",
+            element_gap="26px",
+            bullet_gap="16px",
+        ),
+        decorations=ThemeDecorations(
+            bullet_style="disc",
+            bullet_size="10px",
+            quote_style="large-mark",
+            section_divider="accent-block",
+        ),
+        layout=ThemeLayout(
+            title_alignment="center",
+            content_alignment="center",
             vertical_position="center",
         ),
     ),

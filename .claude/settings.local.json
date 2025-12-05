@@ -29,7 +29,19 @@
       "Bash(powershell -Command:*)",
       "Bash(cmd /c \"mkdir C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo\\packages\\common\\templates 2>nul\")",
       "Bash(python scripts/seed_templates.py:*)",
-      "Bash(cmd /c \"mkdir C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo\\apps\\frontend\\app\\templates 2>nul\")"
+      "Bash(cmd /c \"mkdir C:\\Users\\BiM\\Desktop\\sales(yusuf)\\slides-demo\\apps\\frontend\\app\\templates 2>nul\")",
+      "Bash(docker ps:*)",
+      "Bash(pip:*)",
+      "Bash(python -m pip:*)",
+      "Bash(npm install:*)",
+      "Bash(timeout 5 python -m poetry run honcho start:*)",
+      "Bash(netstat:*)",
+      "Bash(timeout 3 echo:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(docker exec:*)",
+      "Bash(taskkill:*)",
+      "Bash(paste:*)"
     ],
     "deny": [],
     "ask": []

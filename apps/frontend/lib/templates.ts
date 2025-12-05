@@ -51,7 +51,7 @@ export const TEMPLATES: Template[] = [
     title: 'Startup Pitch',
     description: 'Investor pitch deck with problem-solution flow',
     category: 'business',
-    theme: 'corporate',
+    theme: 'sunset',
     samplePrompt: 'Create a pitch deck for a startup that helps small businesses automate their social media marketing using AI.',
     slides: [
       { type: 'title', title: 'TechFlow AI', subtitle: 'Revolutionizing Social Media Marketing' },
@@ -66,7 +66,7 @@ export const TEMPLATES: Template[] = [
     title: 'Quarterly Report',
     description: 'Business metrics and performance review',
     category: 'business',
-    theme: 'minimal',
+    theme: 'ocean',
     samplePrompt: 'Create a quarterly business review covering sales performance, key achievements, challenges, and goals.',
     slides: [
       { type: 'title', title: 'Q4 2024 Report', subtitle: 'Performance Review & Outlook' },
@@ -96,7 +96,7 @@ export const TEMPLATES: Template[] = [
     title: 'Academic Lecture',
     description: 'Clean educational presentation',
     category: 'education',
-    theme: 'minimal',
+    theme: 'forest',
     samplePrompt: 'Create a lecture about machine learning basics covering supervised and unsupervised learning.',
     slides: [
       { type: 'title', title: 'Introduction to Machine Learning', subtitle: 'CS 301 - Fall 2024' },
@@ -110,7 +110,7 @@ export const TEMPLATES: Template[] = [
     title: 'Research Defense',
     description: 'Academic research presentation',
     category: 'education',
-    theme: 'magazine',
+    theme: 'minimal',
     samplePrompt: 'Create a thesis defense presentation about the impact of remote work on productivity.',
     slides: [
       { type: 'title', title: 'Remote Work & Productivity', subtitle: 'A Mixed-Methods Study' },
@@ -125,7 +125,7 @@ export const TEMPLATES: Template[] = [
     title: 'Workshop',
     description: 'Interactive training session',
     category: 'education',
-    theme: 'playful',
+    theme: 'forest',
     samplePrompt: 'Create a design thinking workshop covering the 5 stages of the process.',
     slides: [
       { type: 'title', title: 'Design Thinking 101', subtitle: 'A Hands-On Workshop' },
@@ -141,7 +141,7 @@ export const TEMPLATES: Template[] = [
     title: 'Portfolio',
     description: 'Creative work showcase',
     category: 'creative',
-    theme: 'neobrutalism',
+    theme: 'playful',
     samplePrompt: 'Create a portfolio presentation showcasing design projects and skills.',
     slides: [
       { type: 'title', title: 'Alex Rivera', subtitle: 'Product Designer & Creative Director' },
@@ -171,7 +171,7 @@ export const TEMPLATES: Template[] = [
     title: 'Event Deck',
     description: 'Conference or event presentation',
     category: 'creative',
-    theme: 'dark',
+    theme: 'neobrutalism',
     samplePrompt: 'Create an event presentation for a tech conference.',
     slides: [
       { type: 'title', title: 'DesignCon 2024', subtitle: 'The Future of Digital Experience' },
@@ -216,7 +216,7 @@ export const TEMPLATES: Template[] = [
     title: 'API Documentation',
     description: 'Developer API presentation',
     category: 'technology',
-    theme: 'terminal',
+    theme: 'ocean',
     samplePrompt: 'Create an API documentation overview for a REST API.',
     slides: [
       { type: 'title', title: 'REST API v2', subtitle: 'Developer Documentation' },
@@ -283,7 +283,7 @@ export const TEMPLATES: Template[] = [
     title: 'About Me',
     description: 'Personal introduction deck',
     category: 'personal',
-    theme: 'neobrutalism',
+    theme: 'lavender',
     samplePrompt: 'Create a personal introduction presentation for a job interview.',
     slides: [
       { type: 'title', title: 'Hi, I\'m Jordan!', subtitle: 'Full-Stack Developer' },
@@ -297,7 +297,7 @@ export const TEMPLATES: Template[] = [
     title: 'Travel Guide',
     description: 'Trip itinerary presentation',
     category: 'personal',
-    theme: 'playful',
+    theme: 'ocean',
     samplePrompt: 'Create a travel itinerary for a Japan trip.',
     slides: [
       { type: 'title', title: 'Japan Adventure', subtitle: '10 Days of Wonder' },

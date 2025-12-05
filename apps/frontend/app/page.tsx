@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/atoms";
-import { FeatureCard } from "@/components/molecules";
+import { FeatureCard, TemplateCarousel } from "@/components/molecules";
 import { Sparkles, Edit3, Download, ArrowRight, Zap } from "lucide-react";
 
 export default function LandingPage() {
@@ -61,78 +61,13 @@ export default function LandingPage() {
             <span className="text-text-muted text-sm">No account required</span>
           </div>
 
-          {/* Hero Visual - Stylized Slide Preview */}
-          <div className="relative max-w-4xl mx-auto">
-            {/* Main preview card */}
-            <div className="relative bg-bg-white border-2 border-border-dark rounded-2xl shadow-[8px_8px_0px_0px_#0f0f0f] overflow-hidden">
-              {/* Browser-like header */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b-2 border-border-dark bg-bg-cream">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
-                </div>
-                <div className="flex-1 mx-4">
-                  <div className="max-w-xs mx-auto h-6 bg-bg-white rounded-lg border border-border" />
-                </div>
-              </div>
-
-              {/* Slide content mockup - Realistic slide preview */}
-              <div className="aspect-video bg-gradient-to-br from-bg-cream to-bg-white p-6 md:p-10">
-                <div className="h-full flex flex-col">
-                  {/* Slide title */}
-                  <h3 className="text-xl md:text-3xl lg:text-4xl font-bold text-text-primary mb-4 md:mb-6">
-                    Grow Your Business with AI
-                  </h3>
-
-                  {/* Slide content */}
-                  <div className="flex-1 flex gap-6 md:gap-10">
-                    {/* Left side - bullet points */}
-                    <div className="flex-1 space-y-3 md:space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-accent-pink flex-shrink-0" />
-                        <p className="text-sm md:text-base text-text-secondary">Automate repetitive tasks and save 10+ hours weekly</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-accent-pink flex-shrink-0" />
-                        <p className="text-sm md:text-base text-text-secondary">Increase customer engagement by 3x with personalization</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-accent-pink flex-shrink-0" />
-                        <p className="text-sm md:text-base text-text-secondary">Scale operations without adding headcount</p>
-                      </div>
-                    </div>
-
-                    {/* Right side - visual element */}
-                    <div className="hidden md:flex w-1/3 items-center justify-center">
-                      <div className="relative w-full aspect-square max-w-[160px]">
-                        <div className="absolute inset-0 bg-accent-pink/20 rounded-2xl rotate-6" />
-                        <div className="absolute inset-0 bg-accent-pink rounded-2xl flex items-center justify-center">
-                          <div className="text-center">
-                            <p className="text-3xl lg:text-4xl font-black text-text-primary">87%</p>
-                            <p className="text-xs text-text-primary/70 font-medium">Growth Rate</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Slide footer */}
-                  <div className="flex items-center justify-between pt-4 mt-auto border-t border-border-light">
-                    <span className="text-xs text-text-muted">AI Strategy 2025</span>
-                    <span className="text-xs font-medium text-accent-pink">Slide 3 of 8</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Hero Visual - Template Carousel */}
+          <div className="relative max-w-6xl mx-auto px-4">
+            <TemplateCarousel showUseButton={false} />
 
             {/* Floating elements */}
-            <div className="absolute -top-4 -right-4 md:-top-6 md:-right-6 w-16 h-16 md:w-20 md:h-20 bg-accent-pink border-2 border-border-dark rounded-2xl shadow-[4px_4px_0px_0px_#0f0f0f] flex items-center justify-center rotate-12">
+            <div className="absolute -top-4 -right-4 md:-top-6 md:-right-6 w-16 h-16 md:w-20 md:h-20 bg-accent-pink border-2 border-border-dark rounded-2xl shadow-[4px_4px_0px_0px_#0f0f0f] flex items-center justify-center rotate-12 z-10">
               <Sparkles className="w-8 h-8 md:w-10 md:h-10 text-text-primary" />
-            </div>
-
-            <div className="absolute -bottom-3 -left-3 md:-bottom-4 md:-left-4 px-4 py-2 bg-bg-dark border-2 border-border-dark rounded-xl shadow-[3px_3px_0px_0px_#ff90e8] -rotate-6">
-              <span className="text-sm md:text-base font-bold text-text-inverse">5 slides ready!</span>
             </div>
           </div>
         </div>

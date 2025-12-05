@@ -216,7 +216,12 @@ function SidebarTemplateCard({ template, isSelected, onClick, onPreview }: Sideb
       onClick={onClick}
     >
       {/* Preview area */}
-      <div className="relative overflow-hidden bg-gray-100">
+      <div
+        className="relative overflow-hidden"
+        style={{
+          background: theme.style.background_gradient || theme.colors.background,
+        }}
+      >
         <MiniSlidePreview slide={firstSlide} theme={template.theme} scale={0.14} />
 
         {/* Hover overlay */}

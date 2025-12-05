@@ -7,7 +7,7 @@ SYSTEM_TEMPLATES = [
         "name": "Startup Pitch Deck",
         "description": "Classic 10-slide pitch deck for investors",
         "category": "business",
-        "theme": "neobrutalism",
+        "theme": "sunset",
         "tags": ["startup", "investor", "funding", "pitch"],
         "slides": [
             {
@@ -75,7 +75,7 @@ SYSTEM_TEMPLATES = [
         "name": "Quarterly Business Review",
         "description": "Comprehensive quarterly performance report",
         "category": "business",
-        "theme": "corporate",
+        "theme": "ocean",
         "tags": ["quarterly", "report", "performance", "metrics"],
         "slides": [
             {
@@ -119,7 +119,7 @@ SYSTEM_TEMPLATES = [
         "name": "Sales Proposal",
         "description": "Persuasive sales pitch for potential clients",
         "category": "business",
-        "theme": "neobrutalism",
+        "theme": "corporate",
         "tags": ["sales", "proposal", "client", "deal"],
         "slides": [
             {
@@ -174,7 +174,7 @@ SYSTEM_TEMPLATES = [
         "name": "Product Launch",
         "description": "Announce and showcase a new product",
         "category": "marketing",
-        "theme": "neobrutalism",
+        "theme": "dark",
         "tags": ["product", "launch", "marketing", "announcement"],
         "slides": [
             {
@@ -229,7 +229,7 @@ SYSTEM_TEMPLATES = [
         "name": "Course Introduction",
         "description": "Introduction to an educational course or workshop",
         "category": "education",
-        "theme": "minimal",
+        "theme": "forest",
         "tags": ["course", "education", "training", "workshop"],
         "slides": [
             {
@@ -385,7 +385,7 @@ SYSTEM_TEMPLATES = [
         "name": "Sprint Review",
         "description": "Agile sprint review and demo",
         "category": "technology",
-        "theme": "dark",
+        "theme": "ai",
         "tags": ["agile", "sprint", "scrum", "demo"],
         "slides": [
             {
@@ -429,7 +429,7 @@ SYSTEM_TEMPLATES = [
         "name": "Portfolio Showcase",
         "description": "Creative portfolio presentation",
         "category": "creative",
-        "theme": "magazine",
+        "theme": "playful",
         "tags": ["portfolio", "creative", "showcase", "design"],
         "slides": [
             {
@@ -485,7 +485,7 @@ SYSTEM_TEMPLATES = [
         "name": "Event Announcement",
         "description": "Promote an upcoming event",
         "category": "creative",
-        "theme": "playful",
+        "theme": "neobrutalism",
         "tags": ["event", "announcement", "conference", "meetup"],
         "slides": [
             {
@@ -529,7 +529,7 @@ SYSTEM_TEMPLATES = [
         "name": "Personal Introduction",
         "description": "Introduce yourself professionally",
         "category": "personal",
-        "theme": "neobrutalism",
+        "theme": "magazine",
         "tags": ["introduction", "personal", "about", "bio"],
         "slides": [
             {
@@ -574,7 +574,7 @@ SYSTEM_TEMPLATES = [
         "name": "Project Kickoff",
         "description": "Launch a new project with your team",
         "category": "business",
-        "theme": "corporate",
+        "theme": "lavender",
         "tags": ["project", "kickoff", "team", "planning"],
         "slides": [
             {
@@ -626,9 +626,9 @@ SYSTEM_TEMPLATES = [
 async def seed_templates(db) -> int:
     """
     Seed system templates into database.
-    Returns count of templates created.
+    Returns count of templates created or updated.
     """
-    from sqlalchemy import select
+    from sqlalchemy import select, delete
 
     from packages.common.models.template import Template, TemplateSlide
 
@@ -641,8 +641,12 @@ async def seed_templates(db) -> int:
             Template.is_system == True,  # noqa: E712
         )
         result = await db.execute(query)
-        if result.scalar_one_or_none():
-            continue
+        existing = result.scalar_one_or_none()
+
+        if existing:
+            # Delete existing template and its slides (cascade delete)
+            await db.delete(existing)
+            await db.flush()
 
         # Create template
         slides_data = template_data.pop("slides")

@@ -16,11 +16,28 @@ interface MiniSlidePreviewProps {
 
 // Type guard to check if slide is API template slide
 function isAPITemplateSlide(slide: TemplateSlide): slide is APITemplateSlide {
-  return 'slide_type' in slide;
+  return slide != null && typeof slide === 'object' && 'slide_type' in slide;
 }
 
 export function MiniSlidePreview({ slide, theme, scale = 0.15 }: MiniSlidePreviewProps) {
   const themeConfig = THEMES[theme];
+
+  if (!slide) {
+    return (
+      <div
+        className="relative overflow-hidden flex items-center justify-center"
+        style={{
+          width: `${1920 * scale}px`,
+          height: `${1080 * scale}px`,
+          background: themeConfig.style.background_gradient || themeConfig.colors.background,
+        }}
+      >
+        <span style={{ fontSize: `${16 * scale}px`, color: themeConfig.colors.text_secondary }}>
+          No preview available
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -34,13 +51,8 @@ export function MiniSlidePreview({ slide, theme, scale = 0.15 }: MiniSlidePrevie
       <div
         className="absolute inset-0"
         style={{
-          backgroundColor: themeConfig.colors.background,
+          background: themeConfig.style.background_gradient || themeConfig.colors.background,
           fontFamily: themeConfig.typography.body_font,
-          ...(slide.image_url && {
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url(${slide.image_url})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }),
         }}
       >
         {/* Accent bar */}
@@ -104,10 +116,9 @@ function SlideContent({ slide, theme, scale }: SlideContentProps) {
   const rightContent = isAPITemplateSlide(slide) ? null : slide.rightContent;
   const aiInstructions = isAPITemplateSlide(slide) ? slide.ai_instructions : null;
 
-  // When there's a background image, use white text for better contrast
-  const hasBackgroundImage = !!slide.image_url;
-  const textPrimary = hasBackgroundImage ? '#ffffff' : theme.colors.text_primary;
-  const textSecondary = hasBackgroundImage ? '#e0e0e0' : theme.colors.text_secondary;
+  // Use theme colors for text
+  const textPrimary = theme.colors.text_primary;
+  const textSecondary = theme.colors.text_secondary;
 
   const titleStyle = {
     color: textPrimary,
@@ -161,7 +172,7 @@ function SlideContent({ slide, theme, scale }: SlideContentProps) {
     case 'section':
       return (
         <div className="flex flex-col items-center justify-center">
-          <h2 style={{ ...titleStyle, color: hasBackgroundImage ? '#ffffff' : theme.colors.accent }}>{title || 'Section'}</h2>
+          <h2 style={{ ...titleStyle, color: theme.colors.accent }}>{title || 'Section'}</h2>
         </div>
       );
 
