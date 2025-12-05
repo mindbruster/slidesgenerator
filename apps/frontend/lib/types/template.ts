@@ -11,7 +11,13 @@ export type TemplateCategory =
   | "marketing"
   | "technology"
   | "creative"
-  | "personal";
+  | "personal"
+  | "healthcare"
+  | "finance"
+  | "sales"
+  | "nonprofit";
+
+export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
 
 export interface TemplateSlide {
   id: number;
@@ -37,6 +43,10 @@ export interface Template {
   usage_count: number;
   slides: TemplateSlide[];
   tags: string[] | null;
+  difficulty_level: DifficultyLevel;
+  estimated_time: number;
+  industry_tags: string[] | null;
+  popularity_score: number;
 }
 
 export interface TemplateListItem {
@@ -50,6 +60,10 @@ export interface TemplateListItem {
   usage_count: number;
   slide_count: number;
   tags: string[] | null;
+  difficulty_level: DifficultyLevel;
+  estimated_time: number;
+  industry_tags: string[] | null;
+  popularity_score: number;
 }
 
 export interface TemplateSlideCreate {
@@ -70,6 +84,9 @@ export interface TemplateCreateRequest {
   theme?: ThemeName;
   tags?: string[];
   is_public?: boolean;
+  difficulty_level?: DifficultyLevel;
+  estimated_time?: number;
+  industry_tags?: string[];
   slides: TemplateSlideCreate[];
 }
 
@@ -81,6 +98,9 @@ export interface TemplateUpdateRequest {
   thumbnail_url?: string;
   tags?: string[];
   is_public?: boolean;
+  difficulty_level?: DifficultyLevel;
+  estimated_time?: number;
+  industry_tags?: string[];
 }
 
 export interface TemplateGenerateRequest {

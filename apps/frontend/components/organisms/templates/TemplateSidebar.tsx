@@ -22,6 +22,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  Heart,
+  DollarSign,
+  TrendingUp,
+  HandHeart,
 } from 'lucide-react';
 import { TemplatePreviewModal } from './TemplatePreviewModal';
 
@@ -35,6 +39,10 @@ const CATEGORY_ICONS: Record<TemplateCategory | 'all', React.ElementType> = {
   creative: Palette,
   technology: Cpu,
   personal: User,
+  healthcare: Heart,
+  finance: DollarSign,
+  sales: TrendingUp,
+  nonprofit: HandHeart,
 };
 
 export interface TemplateSidebarProps {

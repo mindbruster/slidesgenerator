@@ -10,7 +10,11 @@ export type TemplateCategory =
   | 'education'
   | 'creative'
   | 'technology'
-  | 'personal';
+  | 'personal'
+  | 'healthcare'
+  | 'finance'
+  | 'sales'
+  | 'nonprofit';
 
 export interface TemplateSlide {
   type: 'title' | 'content' | 'bullets' | 'quote' | 'section' | 'two-column' | 'image-left' | 'image-right';
@@ -42,6 +46,10 @@ export const TEMPLATE_CATEGORIES: Record<TemplateCategory, { label: string }> = 
   creative: { label: 'Creative' },
   technology: { label: 'Technology' },
   personal: { label: 'Personal' },
+  healthcare: { label: 'Healthcare' },
+  finance: { label: 'Finance' },
+  sales: { label: 'Sales' },
+  nonprofit: { label: 'Nonprofit' },
 };
 
 export const TEMPLATES: Template[] = [

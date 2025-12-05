@@ -11,8 +11,19 @@ from pydantic import BaseModel, Field
 from packages.common.schemas.slide_schema import SlideType, SlideLayout
 
 TemplateCategory = Literal[
-    "business", "education", "marketing", "technology", "creative", "personal"
+    "business",
+    "education",
+    "marketing",
+    "technology",
+    "creative",
+    "personal",
+    "healthcare",
+    "finance",
+    "sales",
+    "nonprofit",
 ]
+
+DifficultyLevel = Literal["beginner", "intermediate", "advanced"]
 
 
 class TemplateSlideBase(BaseModel):
@@ -53,6 +64,10 @@ class TemplateBase(BaseModel):
     theme: str = "neobrutalism"
     thumbnail_url: str | None = None
     tags: list[str] | None = None
+    difficulty_level: DifficultyLevel = "beginner"
+    estimated_time: int = Field(default=10, ge=1, le=120, description="Estimated completion time in minutes")
+    industry_tags: list[str] | None = Field(default=None, description="Industry-specific tags for filtering")
+    popularity_score: int = Field(default=0, ge=0, description="Calculated popularity score")
 
 
 class TemplateCreate(TemplateBase):
@@ -74,6 +89,9 @@ class TemplateUpdate(BaseModel):
     thumbnail_url: str | None = None
     tags: list[str] | None = None
     is_public: bool | None = None
+    difficulty_level: DifficultyLevel | None = None
+    estimated_time: int | None = Field(default=None, ge=1, le=120)
+    industry_tags: list[str] | None = None
 
 
 class TemplateResponse(TemplateBase):
@@ -101,6 +119,10 @@ class TemplateListResponse(BaseModel):
     usage_count: int
     slide_count: int
     tags: list[str] | None
+    difficulty_level: DifficultyLevel
+    estimated_time: int
+    industry_tags: list[str] | None
+    popularity_score: int
 
     model_config = {"from_attributes": True}
 

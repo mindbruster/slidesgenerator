@@ -30,6 +30,10 @@ class Template(Base, TimestampMixin):
         is_public: Whether template is visible to all users
         usage_count: Number of times template has been used
         tags: Searchable tags as JSON array
+        difficulty_level: beginner, intermediate, or advanced
+        estimated_time: Estimated completion time in minutes
+        industry_tags: Industry-specific tags for filtering
+        popularity_score: Calculated score for sorting
     """
 
     __tablename__ = "templates"
@@ -44,6 +48,16 @@ class Template(Base, TimestampMixin):
     is_public: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     usage_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     tags: Mapped[list[str] | None] = mapped_column(JSON(none_as_null=True), nullable=True)
+
+    # Metadata fields for improved discoverability
+    difficulty_level: Mapped[str] = mapped_column(
+        String(20), default="beginner", nullable=False
+    )
+    estimated_time: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
+    industry_tags: Mapped[list[str] | None] = mapped_column(
+        JSON(none_as_null=True), nullable=True
+    )
+    popularity_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     # Relationships
     slides: Mapped[list["TemplateSlide"]] = relationship(

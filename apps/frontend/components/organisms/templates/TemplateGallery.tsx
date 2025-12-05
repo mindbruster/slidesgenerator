@@ -23,6 +23,10 @@ import {
   Loader2,
   AlertCircle,
   RefreshCw,
+  Heart,
+  DollarSign,
+  TrendingUp,
+  HandHeart,
 } from 'lucide-react';
 
 const CATEGORY_ICONS: Record<TemplateCategory | 'all', React.ElementType> = {
@@ -33,6 +37,10 @@ const CATEGORY_ICONS: Record<TemplateCategory | 'all', React.ElementType> = {
   technology: Cpu,
   personal: User,
   marketing: Megaphone,
+  healthcare: Heart,
+  finance: DollarSign,
+  sales: TrendingUp,
+  nonprofit: HandHeart,
 };
 
 const CATEGORY_LABELS: Record<TemplateCategory | 'all', string> = {
@@ -43,6 +51,10 @@ const CATEGORY_LABELS: Record<TemplateCategory | 'all', string> = {
   technology: 'Technology',
   personal: 'Personal',
   marketing: 'Marketing',
+  healthcare: 'Healthcare',
+  finance: 'Finance',
+  sales: 'Sales',
+  nonprofit: 'Nonprofit',
 };
 
 const TEMPLATES_PER_ROW = 4;
@@ -93,6 +105,10 @@ export function TemplateGallery({
     'technology',
     'creative',
     'personal',
+    'healthcare',
+    'finance',
+    'sales',
+    'nonprofit',
   ];
 
   // Show only first row when not expanded

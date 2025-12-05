@@ -106,6 +106,10 @@ class TemplateService:
             tags=data.tags,
             is_public=data.is_public,
             is_system=False,
+            difficulty_level=data.difficulty_level,
+            estimated_time=data.estimated_time,
+            industry_tags=data.industry_tags,
+            popularity_score=data.popularity_score,
         )
 
         for slide_data in data.slides:
@@ -168,6 +172,10 @@ class TemplateService:
             usage_count=template.usage_count,
             slide_count=len(template.slides) if template.slides else 0,
             tags=template.tags,
+            difficulty_level=template.difficulty_level,
+            estimated_time=template.estimated_time,
+            industry_tags=template.industry_tags,
+            popularity_score=template.popularity_score,
         )
 
     def build_generation_prompt(

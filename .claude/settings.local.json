@@ -41,7 +41,9 @@
       "Bash(git merge:*)",
       "Bash(docker exec:*)",
       "Bash(taskkill:*)",
-      "Bash(paste:*)"
+      "Bash(paste:*)",
+      "Bash(python:*)",
+      "Bash(start cmd /k \"make backend\")"
     ],
     "deny": [],
     "ask": []
