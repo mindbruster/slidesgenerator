@@ -83,10 +83,11 @@ export function QuoteSlide({
               value={slide.attribution ? `— ${slide.attribution}` : undefined}
               onChange={onEditAttribution}
               isEditable={isEditable}
-              className="mt-6 text-lg"
+              className="mt-6 text-2xl md:text-3xl"
               style={{
                 color: colors.text_secondary,
                 fontFamily: typography.body_font,
+                opacity: 0.85,
               }}
               placeholder="— Attribution"
               focusRingColor={colors.accent}

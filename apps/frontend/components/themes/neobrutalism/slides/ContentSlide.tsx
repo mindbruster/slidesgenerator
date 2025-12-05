@@ -57,7 +57,7 @@ export function ContentSlide({
               value={slide.body}
               onChange={onEditBody}
               isEditable={isEditable}
-              className={cn(getTailwindFontSize(typography.body_size), 'leading-relaxed')}
+              className={cn(getTailwindFontSize(typography.body_size), 'leading-relaxed text-justify')}
               style={{
                 color: colors.text_primary,
                 fontFamily: typography.body_font,

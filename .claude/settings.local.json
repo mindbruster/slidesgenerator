@@ -43,7 +43,12 @@
       "Bash(taskkill:*)",
       "Bash(paste:*)",
       "Bash(python:*)",
-      "Bash(start cmd /k \"make backend\")"
+      "Bash(start cmd /k \"make backend\")",
+      "Bash(npm run build:*)",
+      "Bash(cmd /c \"if exist .next rmdir /s /q .next\")",
+      "Bash(npm run dev:*)",
+      "Bash(timeout 10 echo:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

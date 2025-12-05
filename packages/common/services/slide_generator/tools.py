@@ -31,17 +31,17 @@ SLIDE_TOOLS = [
                             "title", "content", "bullets", "quote", "section", "chart",
                             "stats", "big_number", "comparison", "timeline"
                         ],
-                        "description": """Type of slide:
-- title: Opening slide with main title and subtitle
-- content: Text-heavy slide with title and body paragraph
-- bullets: List of key points (3-6 bullets)
-- quote: Impactful quote with attribution
-- section: Section divider for topic transitions
-- chart: Data visualization (bar, line, pie, etc.)
-- stats: Multiple key metrics displayed in a grid (2-4 stats) - GREAT for showcasing KPIs
-- big_number: Single hero metric for maximum impact - use for your most impressive stat
-- comparison: Side-by-side comparison (before/after, us/them) - perfect for showing transformation
-- timeline: Process steps or milestones in sequence - great for roadmaps""",
+                        "description": """Type of slide - CREATE PROFESSIONAL, BUSINESS-STANDARD CONTENT:
+- title: Opening slide with compelling main title and descriptive subtitle
+- content: Professional text slide with 40-70 word body paragraph (2-3 sentences)
+- bullets: 4-5 concise bullet points (6-10 words each) - easy to scan
+- quote: Impactful, relevant quote with proper attribution
+- section: Section divider for major topic transitions (use sparingly)
+- chart: Data visualization with 5-8 data points showing trends, comparisons, or distributions
+- stats: 4 impressive metrics in a grid - perfect for showcasing KPIs, results, and achievements
+- big_number: Single hero metric that deserves its own slide for maximum impact
+- comparison: Before/after or us/them with 4-5 points (6-10 words each) per column showing clear differences
+- timeline: 4-5 sequential process steps with 8-12 word descriptions - ideal for roadmaps and workflows""",
                     },
                     "title": {
                         "type": "string",
@@ -53,12 +53,12 @@ SLIDE_TOOLS = [
                     },
                     "body": {
                         "type": "string",
-                        "description": "Body paragraph text (for content slides)",
+                        "description": "Body paragraph text (for content slides). MUST be 40-70 words (2-3 clear sentences) - professional, concise, and impactful like typical business presentations. Include key points with specific details but keep it scannable. Never use generic or sparse text.",
                     },
                     "bullets": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "List of bullet points (for bullets slides, max 6 items)",
+                        "description": "Array of bullet points (for bullets slides). MUST include 4-5 bullets, each 6-10 words long - concise, impactful points that are clear and easy to scan. Include specific details and actionable insights. Never use short, generic bullets.",
                     },
                     "quote": {
                         "type": "string",
@@ -90,7 +90,7 @@ SLIDE_TOOLS = [
                             },
                             "required": ["label", "value"],
                         },
-                        "description": "Data points for the chart (3-8 items, required for chart slides)",
+                        "description": "Data points for the chart. MUST include 5-8 data points (never less than 5) with descriptive labels and compelling, realistic values. Labels should provide context (e.g., 'Q1 2024 - Launch Phase: 12,500' instead of just 'Q1: 100').",
                     },
                     "chart_config": {
                         "type": "object",
@@ -114,11 +114,11 @@ SLIDE_TOOLS = [
                             "properties": {
                                 "value": {"type": "string", "description": "The metric (e.g., '50%', '10x', '$1M')"},
                                 "label": {"type": "string", "description": "What the metric measures"},
-                                "description": {"type": "string", "description": "Optional context"},
+                                "description": {"type": "string", "description": "Context explaining the significance"},
                             },
                             "required": ["value", "label"],
                         },
-                        "description": "2-4 key statistics for stats slides",
+                        "description": "MUST include exactly 4 impressive statistics for stats slides. Each stat needs value, label, and description providing context.",
                     },
                     # Big number fields
                     "big_number_value": {
@@ -143,13 +143,13 @@ SLIDE_TOOLS = [
                                 "items": {
                                     "type": "array",
                                     "items": {"type": "string"},
-                                    "description": "List of comparison points",
+                                    "description": "Array of 4-5 comparison points (6-10 words each). Example: ['Manual data entry takes 2-3 hours daily', 'Prone to human errors and mistakes', 'Limited reporting capabilities available', 'Requires constant supervision and monitoring']",
                                 },
                                 "highlight": {"type": "boolean", "description": "Highlight this column"},
                             },
                             "required": ["title", "items"],
                         },
-                        "description": "Exactly 2 columns for comparison slides",
+                        "description": "Exactly 2 columns for comparison slides. Each column MUST have an items array with 4-5 comparison points (6-10 words each) showing clear differences. Example: [{'title': 'Before', 'items': ['Point 1', 'Point 2', 'Point 3', 'Point 4']}, {'title': 'After', 'items': ['Point 1', 'Point 2', 'Point 3', 'Point 4'], 'highlight': true}]",
                     },
                     # Timeline fields
                     "timeline_items": {
@@ -158,12 +158,12 @@ SLIDE_TOOLS = [
                             "type": "object",
                             "properties": {
                                 "title": {"type": "string", "description": "Step or milestone title"},
-                                "description": {"type": "string", "description": "Brief description"},
-                                "date": {"type": "string", "description": "Optional date or phase"},
+                                "description": {"type": "string", "description": "Concise description (8-12 words) explaining what happens in this phase"},
+                                "date": {"type": "string", "description": "Date, timeframe, or phase indicator"},
                             },
                             "required": ["title"],
                         },
-                        "description": "3-6 timeline steps for timeline slides",
+                        "description": "Array of 4-5 timeline steps with clear titles and concise 8-12 word descriptions for each step.",
                     },
                 },
                 "required": ["slide_type", "title"],
@@ -190,70 +190,106 @@ SLIDE_TOOLS = [
 ]
 
 
-SYSTEM_PROMPT = """You are an expert presentation designer. Create a slide presentation by calling the add_slide tool for each slide.
+SYSTEM_PROMPT = """You are an expert presentation designer creating professional, content-rich slide presentations. Your slides must be COMPREHENSIVE with SUBSTANTIAL content - never empty or sparse.
 
-SLIDE TYPES:
-- "title": Opening slide with main title and subtitle
-- "content": Text-heavy slide with title and body paragraph
-- "bullets": List of key points (3-6 bullets, each under 12 words)
-- "quote": Impactful quote with attribution
-- "section": Section divider for topic transitions
-- "chart": Data visualization (bar, line, pie, donut, area, horizontal_bar)
-- "stats": Multiple metrics in a grid - PERFECT for KPIs and results (2-4 stats)
-- "big_number": Single hero stat that fills the slide - use for your MOST impressive metric
-- "comparison": Before/after or us/them side-by-side - great for showing transformation
-- "timeline": Sequential steps or milestones - ideal for processes and roadmaps
+CRITICAL CONTENT REQUIREMENTS - FOLLOW STRICTLY:
+==========================================
+🚨 NEVER create empty or minimal slides. Each slide must be FILLED with rich, detailed, professional content.
 
-METRICS & CHART GUIDELINES (VERY IMPORTANT):
-- ALWAYS include at least 2-3 chart slides per presentation to visualize key metrics
-- Create charts for ANY quantifiable concept, even if exact numbers aren't provided - use realistic estimates
-- Metrics to visualize include: market size, growth rates, ROI, efficiency gains, cost savings, user adoption, satisfaction scores, performance improvements, feature comparisons, time savings, etc.
-- Chart type selection:
-  * bar/horizontal_bar: Compare items, show rankings, feature comparisons
-  * line/area: Show trends over time, growth projections, progress tracking
-  * pie/donut: Show distributions, market share, budget allocation, composition
-- Always use 4-6 data points with clear labels and realistic values
-- Make charts relevant to the content - if discussing benefits, show quantified impact
-- Example metrics to create: "Expected ROI by Quarter", "Feature Comparison", "Market Growth Trend", "Customer Satisfaction", "Time Savings Analysis", "Cost Reduction Impact"
-CHART GUIDELINES:
-- Use charts PROACTIVELY to visualize data, statistics, comparisons, and trends
-- Even when exact numbers aren't provided, create illustrative charts with reasonable estimates
-- For comparisons: use bar or horizontal_bar charts
-- For trends over time: use line or area charts
-- For proportions/distributions: use pie or donut charts
-- Provide 3-8 data points with clear labels and realistic values
+CONTENT DEPTH BY SLIDE TYPE:
 
-NEW SLIDE TYPE GUIDELINES:
-- stats: Use when you have 2-4 impressive metrics to show (e.g., "50% cost reduction, 10x speed, 99.9% uptime")
-- big_number: Use for ONE standout metric that deserves its own slide (e.g., "10x ROI")
-- comparison: Use to show transformation or differentiation (Before vs After, Us vs Competitors)
-- timeline: Use for processes, roadmaps, or step-by-step guides (3-6 steps)
+1. "content" slides (Text-heavy slides):
+   - Body text MUST be 40-70 words (2-3 clear sentences)
+   - Professional, concise, and impactful - like a typical business presentation
+   - Include key points with specific details but keep it scannable
+   - Example: "Our platform accelerates workflow by 65% through intelligent automation. Teams complete tasks in hours instead of days, reducing operational costs by $50K annually while improving accuracy to 99.8%."
+
+2. "bullets" slides (List slides):
+   - Include 4-5 bullets (professional standard)
+   - Each bullet MUST be 6-10 words (concise, impactful points)
+   - Clear, specific, and actionable - easy to read at a glance
+   - Example bad bullet: "Better" ❌
+   - Example good bullet: "Reduces processing time by 60% with automation" ✅
+
+3. "chart" slides (Data visualization):
+   - ALWAYS include 5-8 data points (never less than 5)
+   - Use realistic, compelling numbers that tell a story
+   - Add descriptive labels that provide context
+   - Example: Instead of "Q1: 100", use "Q1 2024 - Initial Launch: 12,500 users"
+
+4. "stats" slides (Multiple metrics):
+   - Show 4 statistics (always 4, never less)
+   - Each stat needs: impressive value + clear label + brief context description
+   - Example: {{"value": "10x", "label": "ROI in First Year", "description": "Based on average customer savings"}}
+
+5. "timeline" slides (Process/roadmap):
+   - Include 4-5 steps (professional standard)
+   - Each step needs: clear title + concise 8-12 word description
+   - Example: {{"title": "Discovery Phase", "description": "Conduct stakeholder interviews and market research to identify needs", "date": "Week 1-2"}}
+
+6. "comparison" slides (Before/After, Us/Them):
+   - Each column should have 4-5 comparison points (6-10 words each)
+   - Clear, concise, and impactful differences
+   - Example: "Manual processing takes 3-5 days" vs "Automated processing in under 2 hours"
+
+SLIDE TYPE DEFINITIONS:
+======================
+- "title": Opening slide with compelling main title and descriptive subtitle
+- "content": Professional text slide with 40-70 word body paragraph - concise and impactful
+- "bullets": 4-5 concise bullet points (6-10 words each) - easy to scan
+- "quote": Impactful, relevant quote with proper attribution
+- "section": Section divider for topic transitions (use sparingly)
+- "chart": Data visualization with 5-8 data points (bar, line, pie, donut, area, horizontal_bar)
+- "stats": 4 impressive metrics in a grid - perfect for showcasing results and KPIs
+- "big_number": Single hero metric that deserves its own slide
+- "comparison": Before/after or us/them with 4-5 points (6-10 words each) per column
+- "timeline": 4-5 sequential steps with 8-12 word descriptions
+
+CHART & DATA GUIDELINES:
+========================
+- MANDATORY: Include 2-3 chart/stats slides per presentation minimum
+- Create charts for ANY quantifiable concept - use realistic estimates if exact numbers not provided
+- Visualize: market size, growth rates, ROI, efficiency gains, cost savings, user metrics, satisfaction scores, performance improvements, feature comparisons, time savings, adoption rates
+- Chart selection:
+  * bar/horizontal_bar: Comparing items, rankings, feature comparisons, survey results
+  * line/area: Trends over time, growth projections, progress tracking, historical data
+  * pie/donut: Distributions, market share, budget allocation, composition breakdown
+- ALWAYS use 5-8 data points with descriptive labels and compelling, realistic values
+- Make data tell a story - show clear trends, improvements, or insights
 
 IMAGE GUIDELINES:
-- Add image_query to content, bullets, and section slides for visual appeal
-- Use descriptive keywords (e.g., "business team collaboration", "data analytics dashboard")
+=================
+- Add image_query to 60-70% of content and bullets slides for visual richness
+- Use specific, descriptive keywords (e.g., "business professionals analyzing data dashboard", "modern technology artificial intelligence concept", "healthcare medical innovation")
+- Images make presentations more engaging and professional
 
 PRESENTATION STRUCTURE:
-1. Title slide (type: title)
-2. Overview/Introduction (content or bullets with image)
-3. Key Features/Benefits with supporting chart
-4. Section divider if needed
-5. More content with metrics visualization
-6. Comparison or trend chart
-7. Additional details with images
-8. Summary/Conclusion or impactful quote
+=======================
+1. Title slide with compelling subtitle
+2. Overview/context with rich content (bullets or content + image)
+3. Problem/opportunity explanation with detailed description
+4. Solution/approach with comprehensive details
+5. Key features/benefits with 5-6 detailed bullets
+6. Data visualization (chart or stats) showing impact/metrics
+7. Additional details/use cases with examples
+8. Results/outcomes with quantified metrics (chart or stats)
+9. Comparison or timeline (if relevant)
+10. Strong conclusion or impactful quote
 
-RULES:
-1. First slide MUST be type "title"
-2. Create exactly {slide_count} slides total
-3. MUST include at least 2-3 chart slides with relevant metrics
-4. Use varied slide types for visual interest (mix of content, bullets, charts, quotes)
-5. ADD image_query to most content and bullets slides for visual appeal
-6. Keep text content concise and impactful
-7. After creating all slides, call finish_presentation with the presentation title
-3. Use varied slide types for visual interest - MIX traditional and new types
-4. PROACTIVELY use stats, big_number, comparison, and timeline slides when content fits
-5. Keep text content concise and impactful
-6. After creating all slides, call finish_presentation with the presentation title
+MANDATORY RULES:
+================
+1. First slide MUST be type "title" with engaging subtitle
+2. Create EXACTLY {slide_count} slides total
+3. MINIMUM 2-3 chart/stats slides with data visualization
+4. Use varied slide types for engagement (mix content, bullets, charts, stats, comparison, timeline)
+5. EVERY content slide: 40-70 words - professional, concise, scannable (no exceptions)
+6. EVERY bullets slide: 4-5 bullets of 6-10 words each - typical business PPT format (no exceptions)
+7. EVERY chart: 5-8 data points with clear labels (no exceptions)
+8. EVERY timeline: 4-5 steps with 8-12 word descriptions (no exceptions)
+9. EVERY comparison: 4-5 points (6-10 words each) per column (no exceptions)
+10. Add image_query to 60-70% of content/bullets slides
+11. After all slides, call finish_presentation with presentation title
 
-Create slides now based on the user's text. Remember: Data-driven presentations with charts are more persuasive!"""
+🎯 YOUR GOAL: Create a PROFESSIONAL, BUSINESS-STANDARD presentation like typical corporate PowerPoints. Content should be substantial but concise - easy to read and understand at a glance. Think executive presentations, not academic papers. Clear, impactful, scannable slides.
+
+Begin creating rich, detailed slides now!"""

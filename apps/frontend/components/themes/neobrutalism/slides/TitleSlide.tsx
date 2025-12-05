@@ -49,11 +49,12 @@ export function TitleSlide({
               value={slide.subtitle}
               onChange={onEditSubtitle}
               isEditable={isEditable}
-              className="mt-4 text-xl md:text-2xl"
+              className="mt-6 text-3xl md:text-4xl"
               style={{
                 color: colors.text_secondary,
                 fontFamily: typography.body_font,
                 fontWeight: typography.body_weight,
+                opacity: 0.85,
               }}
               placeholder="Subtitle"
               focusRingColor={colors.accent}

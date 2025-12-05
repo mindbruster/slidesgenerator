@@ -63,7 +63,7 @@ export function BulletsSlide({
                   value={bullet}
                   onChange={onEditBullet ? (v) => onEditBullet(i, v) : undefined}
                   isEditable={isEditable}
-                  className={getTailwindFontSize(typography.body_size)}
+                  className={cn(getTailwindFontSize(typography.body_size), 'text-justify')}
                   style={{
                     color: colors.text_primary,
                     fontFamily: typography.body_font,
